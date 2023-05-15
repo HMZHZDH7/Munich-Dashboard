@@ -6,7 +6,7 @@ library(plotly)
 #library(shinylogs)
 library(DT)
 #library(shinydashboard)
-library(ggforce)
+#library(ggforce)
 library(bslib)
 
 #Utils
@@ -45,7 +45,6 @@ ui <- fluidPage(theme = bs_theme(version = 4, bootswatch = "minty"),
 )
 
 server <- function(input, output, session) {
-  # Store JSON with logs in the logs dir
   plot_Expanded("Dashboard",QI_db)
 }
 
