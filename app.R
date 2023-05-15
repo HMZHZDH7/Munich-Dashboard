@@ -1,7 +1,7 @@
 library(tidyverse)
 library(shiny)
 library(plotly)
-library(styler)
+#library(styler)
 #library(lintr)
 library(shinylogs)
 library(DT)
