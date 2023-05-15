@@ -40,7 +40,7 @@ compare_national <- reactiveVal(TRUE)
 hospitals <- numVars %>% filter(site_name!="Samaritan", site_name!="Memorial", site_name!="Progress") 
 hospitals <- unique(hospitals$site_name)
 
-ui <- fluidPage(theme = bs_theme(version = 4, bootswatch = "minty"),
+ui <- fluidPage(
   plot_Expanded_UI("Dashboard", QI_db$INDICATOR, hospitals)
 )
 
