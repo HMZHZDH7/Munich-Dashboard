@@ -7,7 +7,7 @@ library(plotly)
 library(DT)
 #library(shinydashboard)
 #library(ggforce)
-library(bslib)
+#library(bslib)
 
 #Utils
 #source("utils/dataHandlerQI.R", local = T)
