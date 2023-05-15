@@ -2,51 +2,46 @@ library(tidyverse)
 library(shiny)
 library(plotly)
 library(styler)
-library(lintr)
+#library(lintr)
 library(shinylogs)
 library(DT)
-library(shinydashboard)
+#library(shinydashboard)
 library(ggforce)
 library(bslib)
 
-
-#Structure
-source("modules/dashboard_Structure.R", local = T)
-
-#Pages
-source("modules/page_HO.R", local = T)
-source("modules/page_PC.R", local = T)
-source("modules/page_Generic.R", local = T)
-
 #Utils
-source("utils/dataHandlerQI.R", local = T)
+#source("utils/dataHandlerQI.R", local = T)
 source("utils/dataLoader.R", local = T)
 source("utils/QILoader.R", local = T)
 
 #Element modules
 source("modules/plot_Expanded.R", local = T)
-source("modules/QI_Section_Num.R", local = T)
-source("modules/QI_Section_Cat.R", local = T)
-source("modules/rowmaker_Num.R", local = T)
-source("modules/rowmaker_Cat.R", local = T)
-
 #If you want to have the logs folder prompted on application stop
 #onStop(function() {
 #  browseURL(url = "logs")
 #})
 
-#db <- dataLoader()
-
 #Load hospital data, check data/dataREanonymized.csv and utils/dataLoader.R to see what data is being loaded and how.
 db <- dataLoader()
 numVars <- db$numVars
+numVars <- numVars %>% filter(YQ!="2018 Q4")
 catVars <- db$catVars
 
 #Load QI data, check data/QI_info.csv and utils/QILoader.R to see what data is being loaded and how.
 QI_db <- QILoader()
 
+view(numVars)
+#view(catVars)
+#view(QI_db)
+QI_name <- reactiveVal("Door-to-imaging time")
+compared_hospitals <- reactiveVal(NULL)
+compare_national <- reactiveVal(TRUE)
+
+hospitals <- numVars %>% filter(site_name!="Samaritan", site_name!="Memorial", site_name!="Progress") 
+hospitals <- unique(hospitals$site_name)
+
 ui <- fluidPage(theme = bs_theme(version = 4, bootswatch = "minty"),
-  dashboard_Structure_UI("Dashboard")
+  plot_Expanded_UI("Dashboard", QI_db$INDICATOR, hospitals)
 )
 
 server <- function(input, output, session) {
@@ -54,7 +49,7 @@ server <- function(input, output, session) {
   track_usage(
     storage_mode = store_null()
   )
-  dashboard_Structure("Dashboard")
+  plot_Expanded("Dashboard",QI_db)
 }
 
 shinyApp(ui = ui, server = server)
