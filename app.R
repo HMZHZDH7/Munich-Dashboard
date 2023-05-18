@@ -24,13 +24,14 @@ source("modules/plot_Expanded.R", local = T)
 #Load hospital data, check data/dataREanonymized.csv and utils/dataLoader.R to see what data is being loaded and how.
 db <- dataLoader()
 numVars <- db$numVars
-numVars <- numVars %>% filter(YQ!="2018 Q4")
-catVars <- db$catVars
+numVars <- numVars %>% filter(YQ!="2016 Q1", YQ!="2016 Q2", YQ!="2016 Q3", YQ!="2016 Q4", 
+                              YQ!="2017 Q1", YQ!="2017 Q2", YQ!="2017 Q3", YQ!="2017 Q4")
+#catVars <- db$catVars
 
 #Load QI data, check data/QI_info.csv and utils/QILoader.R to see what data is being loaded and how.
 QI_db <- QILoader()
 
-view(numVars)
+#view(numVars)
 #view(catVars)
 #view(QI_db)
 QI_name <- reactiveVal("Door-to-imaging time")

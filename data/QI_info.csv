@@ -1,5 +1,5 @@
 ﻿Number,TAB,INDICATOR,ABBREVIATION,COLUMN,ATTRIBUTE_TYPE,SUMMARIZE_BY,NEW_DASHBOARD_VIS
-1,PC,Age,,age,Quantitative,median,number
+1,PC,Age,QI0,age,Quantitative,median,number
 2,PC,Gender,,gender,Categorical,%,stacked_bargraph
 3,PC,NIHSS,,nihss_score,Quantitative,median,trend
 4,PC,BP systolic,,sys_blood_pressure,Quantitative,mean,trend
@@ -9,7 +9,7 @@
 8,PC,mRS 2-5,,prestroke_mrs,Quantitative,%,trend
 9,PC,COVID positive,,covid_test,Categorical_binary,%,trend
 10,PC,In-hospital stroke,,hospital_stroke,Categorical_binary,%,trend
-11,PC,Arrival pre-notified,,prenotification,Categorical_binary,%,trend
+11,PC,Arrival pre-notified,QI5,prenotification,Categorical_binary,%,trend
 12,PC,Hypertension,,risk_hypertension,Categorical_binary,%,trend
 13,PC,Diabetes,,risk_diabetes,Categorical_binary,%,trend
 14,PC,Hyperlipidemia,,risk_hyperlipidemia,Categorical_binary,%,trend
@@ -47,12 +47,12 @@
 46,Bleeding,Infratentorial bleeding,QI2,,Categorical_binary,%,trend
 47,Bleeding,Source of bleeding found,QI3,bleeding_source,Categorical_binary,%,trend
 48,Bleeding,Intraventricular bleeding,QI4,,Categorical_binary,%,trend
-49,Bleeding,ICH score,QI5,ich_score,Categorical,%,stacked_bargraph
+49,Bleeding,ICH score,,ich_score,Categorical,%,stacked_bargraph
 50,Bleeding,Neurosurgery for ICH,QI6,,Categorical,%,stacked_bargraph
 51,Bleeding,Neurosurgery for SAH,QI7,,Categorical,%,stacked_bargraph
 52,Bleeding,ICH bleeding cause,QI8,,Categorical,%,stacked_bargraph
 53,Bleeding,DVT prevention for ICH,QI9,,Categorical,%,stacked_bargraph
-54,Bleeding,Hunt-Hess,QI10,hunt_hess_score,Categorical,%,stacked_bargraph
+54,Bleeding,Hunt-Hess,,hunt_hess_score,Categorical,%,stacked_bargraph
 55,Imaging,Imaging modality,QI1,imaging_type,Categorical,%,stacked_bargraph
 56,Imaging,Site of occlusion,QI2,,Categorical,%,stacked_bargraph
 57,Imaging,Imaging not done at all,QI3,imaging_done,Categorical_binary,%,trend
