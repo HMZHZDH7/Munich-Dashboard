@@ -78,10 +78,10 @@ dataLoader <- function() {
   
   #catVars <- catVars %>% pivot_longer(-key_cols, names_to = "QI", values_to = "Value")
   
-  #numVarswithcats <- numVars %>% left_join(catVars, 
-  #                             by=c('site_name'='site_name', 'YQ'='YQ', 'subject_id'='subject_id',
-  #                                  'site_country'='site_country', 'site_id'='site_id', 
-  #                                  'discharge_year'='discharge_year', 'discharge_quarter'='discharge_quarter'))
+  numVarswithcats <- numVars %>% left_join(catVars, 
+                               by=c('site_name'='site_name', 'YQ'='YQ', 'subject_id'='subject_id',
+                                    'site_country'='site_country', 'site_id'='site_id', 
+                                    'discharge_year'='discharge_year', 'discharge_quarter'='discharge_quarter'))
   #view(numVarswithcats)
-  return(list("numVars" = numVars))
+  return(list("numVars" = numVarswithcats))
 }

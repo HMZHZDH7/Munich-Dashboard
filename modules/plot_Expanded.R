@@ -119,11 +119,12 @@ plot_Expanded <- function(id, df) {
       #       # Here we see the interactive plot. It selects from the database the chosen columns via input$variableName and generates a plot for it.
       output$plot <- renderPlotly({
         if(!is.null(QI_name())) {
-          view(numVars%>% filter(QI == QI_name(), site_name=="Samaritan") %>% na.omit())
-          QI_data <- numVars %>% filter(QI == QI_name(), site_name=="Samaritan") %>% na.omit() %>% 
+          view(numVars)
+          
+          QI_data <- numVars %>% filter(QI == QI_name(), site_name=="Samaritan") %>% drop_na(Value) %>% 
             group_by(YQ, site_name, site_country) %>% 
-            summarise(median = median(Value), sd = sd(Value), min=min(Value),
-                      max=max(Value))
+            mutate(median = median(Value), sd = sd(Value), min=min(Value),
+                      max=max(Value),.groups = "drop") %>% ungroup()
           view(df)
           view(QI_data)
           
@@ -154,9 +155,9 @@ plot_Expanded <- function(id, df) {
             theme_bw()
           
           if(!is.null(compared_hospitals()) && !is_empty(compared_hospitals())){
-            compare_data <- numVars %>% filter(QI == QI_name(), site_name%in%compared_hospitals()) %>% na.omit() %>% 
+            compare_data <- numVars %>% filter(QI == QI_name(), site_name%in%compared_hospitals()) %>% drop_na(Value) %>% 
               group_by(site_name,YQ) %>% 
-              summarise(median = median(Value), sd = sd(Value), min=min(Value), max=max(Value),.groups = "drop")
+              summarise(median = median(Value), sd = sd(Value), min=min(Value), max=max(Value))  %>% ungroup()
             
             
             
@@ -166,7 +167,7 @@ plot_Expanded <- function(id, df) {
           }
           
           if(compare_national()==TRUE){
-            compare_nat_data <- numVars %>% filter(QI == QI_name(), site_name!="Samaritan") %>% na.omit() %>% 
+            compare_nat_data <- numVars %>% filter(QI == QI_name(), site_name!="Samaritan") %>% drop_na(Value) %>% 
               group_by(YQ) %>% 
               summarise(median = median(Value), sd = sd(Value), min=min(Value), max=max(Value),.groups = "drop")
             
