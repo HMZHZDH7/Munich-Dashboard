@@ -35,11 +35,14 @@ QI_db <- QILoader()
 #view(catVars)
 #view(QI_db)
 QI_name <- reactiveVal("Door-to-imaging time")
+QI_name_dist <- reactiveVal("Door-to-imaging time")
+
 compared_hospitals <- reactiveVal(NULL)
 compare_national <- reactiveVal(TRUE)
 
 hospitals <- numVars %>% filter(site_name!="Samaritan", site_name!="Memorial", site_name!="Progress") 
 hospitals <- unique(hospitals$site_name)
+quarts <- numVars$YQ
 
 ui <- fluidPage(
   plot_Expanded_UI("Dashboard", QI_db$INDICATOR, hospitals)

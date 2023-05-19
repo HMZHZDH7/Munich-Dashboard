@@ -1,4 +1,4 @@
-plot_Expanded_UI <- function(id, database, hospitals) {
+plot_Expanded_UI <- function(id, database, hospitals, quarts) {
   ns <- NS(id)
   
   #Storing the plot under this variable
@@ -25,8 +25,23 @@ plot_Expanded_UI <- function(id, database, hospitals) {
                choices = c("median", "mean", "standard deviation", "minimum", "maximum"),
                selected = "median"),
              
+             #checkboxGroupInput(
+            #   inputId = ns("selected_quarts"),
+            #   label = h6("Quarters shown in plot:"),
+            #   choices = c("2018 Q1", "2018 Q2", "2018 Q3", "2018 Q4",
+            #               "2019 Q1", "2019 Q2", "2019 Q3", "2019 Q4",
+            #               "2020 Q1", "2020 Q2", "2020 Q3", "2020 Q4",
+            #               "2021 Q1", "2021 Q2", "2021 Q3", "2021 Q4"),
+            #   selected = c("2018 Q1", "2018 Q2", "2018 Q3", "2018 Q4",
+            #                "2019 Q1", "2019 Q2", "2019 Q3", "2019 Q4",
+            #                "2020 Q1", "2020 Q2", "2020 Q3", "2020 Q4",
+            #                "2021 Q1", "2021 Q2", "2021 Q3", "2021 Q4")), 
+             
              h6("Show trend"),
              checkboxInput(inputId = ns("selected_trend"), "Show trend line", value = FALSE),
+             
+             h6("Show error bars"),
+             checkboxInput(inputId = ns("selected_error"), "Show error bar", value = FALSE),
       ),
       column(3, 
              h3("Compare"), 
@@ -73,7 +88,13 @@ plot_Expanded_UI <- function(id, database, hospitals) {
                inputId = ns("selected_filtercol"),
                label = h6("Select variable for filter"),
                choices = c("", database),
-               selected = NULL))
+               selected = NULL),
+             numericInput("selected_num", 
+                          h3("Value for filter"), 
+                          value = NULL)
+             ),
+      
+           
     ),
     
     
@@ -91,13 +112,13 @@ plot_Expanded_UI <- function(id, database, hospitals) {
       column(3,
              h3("Plot characteristics"),     
              selectInput(
-               inputId = ns("selected_col"),
+               inputId = ns("selected_col_dist"),
                label = h6("Select y-axis variable"),
                choices = database,
                selected = "Door-to-imaging time"),
              
              selectInput(
-               inputId = ns("selected_colx"),
+               inputId = ns("selected_colx_dist"),
                label = h6("Select aggregation type"),
                choices = c("median", "mean", "standard deviation", "minimum", "maximum"),
                selected = "median")
@@ -160,20 +181,26 @@ plot_Expanded <- function(id, df) {
         {compare_national(FALSE)}
         
       })
+      
+      observeEvent(input$selected_col_dist,{
+        
+        index <- match(input$selected_col_dist, df$INDICATOR)
+        QI_col <- df$COLUMN[index]
+        
+        
+        QI_name_dist(QI_col)
+      })
       #validate(need(df(), "Waiting for data..."), errorClass = character(0))
       #QI_data <- df
       #browser()
       #       # Here we see the interactive plot. It selects from the database the chosen columns via input$variableName and generates a plot for it.
       output$plot <- renderPlotly({
         if(!is.null(QI_name())) {
-          view(numVars)
-          
+
           QI_data <- numVars %>% filter(QI == QI_name(), site_name=="Samaritan") %>% drop_na(Value) %>% 
             group_by(YQ, site_name, site_country) %>% 
             mutate(median = median(Value), sd = sd(Value), min=min(Value),
                       max=max(Value),.groups = "drop") %>% ungroup()
-          view(df)
-          view(QI_data)
           
           
           #if(!is.null(compared_hospitals())) {
@@ -232,6 +259,22 @@ plot_Expanded <- function(id, df) {
           ggplotly(plot)
         }
       })
+      output$distPlot <- renderPlotly({
+        
+        
+        QI_data_dist <- numVars %>% filter(QI == QI_name_dist(), site_name=="Samaritan") %>% drop_na(Value) %>% 
+          group_by(YQ, site_name, site_country) %>% 
+          mutate(median = median(Value), sd = sd(Value), min=min(Value),
+                 max=max(Value),.groups = "drop") %>% ungroup()
+        
+        
+        disPlot <- ggplot(QI_data_dist, aes(x = median)) +
+          geom_density(aes(group = 1), color="#D16A00", linetype="solid") +
+          scale_color_discrete(labels=c("Your hospital"))+
+          #geom_errorbar(aes(ymin=median-sd, ymax=median+sd)) + 
+          theme_bw()
+      })
+      
     }
   )
 }
