@@ -121,8 +121,54 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
                inputId = ns("selected_colx_dist"),
                label = h6("Select aggregation type"),
                choices = c("median", "mean", "standard deviation", "minimum", "maximum"),
-               selected = "median")
-      ))  
+               selected = "median"),
+             h6("Show mean"),
+             checkboxInput(inputId = ns("selected_mean_dist"), "Show mean line", value = FALSE),
+             
+             h6("Show median"),
+             checkboxInput(inputId = ns("selected_median_dist"), "Show median line", value = FALSE),
+      ),
+      column(3, 
+             h3("Compare"), 
+             
+             h6("Compare with counry"),
+             checkboxInput(inputId = ns("selected_natcomparisons_dist"), "Show national value", value = FALSE),
+             
+             selectInput(
+               inputId = ns("selected_comparisons_dist"),
+               label = h6("Compare with hospitals"),
+               choices = hospitals,
+               selected = NULL)  
+      ),
+      column(3, 
+             h3("Filter by subgroups"), 
+             
+             checkboxGroupInput(
+               inputId = ns("selected_genders_dist"),
+               label = h6("Genders shown in plot:"),
+               choices = c("Female", "Male"),
+               selected = c("Female", "Male")),  
+             
+             checkboxGroupInput(
+               inputId = ns("selected_imagingdone_dist"),
+               label = h6("Imaging of patients shown in plot"),
+               choices = c("Done", "Not done"),
+               selected = c("Done", "Not done")),  
+             
+             checkboxGroupInput(
+               inputId = ns("selected_prenotification_dist"),
+               label = h6("Prenotification of patients in plot"),
+               choices = c("Prenotified", "Not prenotified"),
+               selected = c("Prenotified", "Not prenotified")),
+             
+             checkboxGroupInput(
+               inputId = ns("selected_mrs_dist"),
+               label = h6("mRS of patients in plot"),
+               choices = c(1:5),
+               selected = c(1:5))  
+      )
+      
+      )  
     )
   
   corr_UI <- tagList(
@@ -143,7 +189,8 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
                inputId = ns("selected_colx"),
                label = h6("Select aggregation type"),
                choices = c("median", "mean", "standard deviation", "minimum", "maximum"),
-               selected = "median")
+               selected = "median"),
+            
       ))  
   )
   
