@@ -23,7 +23,10 @@ plot_Expanded_UI <- function(id, database, hospitals) {
                inputId = ns("selected_colx"),
                label = h6("Select aggregation type"),
                choices = c("median", "mean", "standard deviation", "minimum", "maximum"),
-               selected = "median")
+               selected = "median"),
+             
+             h6("Show trend"),
+             checkboxInput(inputId = ns("selected_trend"), "Show trend line", value = FALSE),
       ),
       column(3, 
              h3("Compare"), 
@@ -79,14 +82,58 @@ plot_Expanded_UI <- function(id, database, hospitals) {
   )
   
   #Storing the datatable output under this variable
-  #table_UI <- dataTableOutput(outputId = ns("table"))
+  dist_UI <- tagList(
+    plotlyOutput(
+      outputId = ns("distPlot")
+    ),
+    
+    fixedRow(
+      column(3,
+             h3("Plot characteristics"),     
+             selectInput(
+               inputId = ns("selected_col"),
+               label = h6("Select y-axis variable"),
+               choices = database,
+               selected = "Door-to-imaging time"),
+             
+             selectInput(
+               inputId = ns("selected_colx"),
+               label = h6("Select aggregation type"),
+               choices = c("median", "mean", "standard deviation", "minimum", "maximum"),
+               selected = "median")
+      ))  
+    )
+  
+  corr_UI <- tagList(
+    plotlyOutput(
+      outputId = ns("corrPlot")
+    ),
+    
+    fixedRow(
+      column(3,
+             h3("Plot characteristics"),     
+             selectInput(
+               inputId = ns("selected_col"),
+               label = h6("Select y-axis variable"),
+               choices = database,
+               selected = "Door-to-imaging time"),
+             
+             selectInput(
+               inputId = ns("selected_colx"),
+               label = h6("Select aggregation type"),
+               choices = c("median", "mean", "standard deviation", "minimum", "maximum"),
+               selected = "median")
+      ))  
+  )
   
   #Here we select to output the plot and table under a tabsetPanel format, where the user can choose to look at either the plot or the underlying datatable
-  #tabsetPanel(
-  #  type = "tabs",
-  #  tabPanel("Plot", plot_UI),
-  #  tabPanel("Table", table_UI)
-  #)
+  tabsetPanel(
+    type = "tabs",
+    tabPanel("Timeline", plot_UI),
+    tabPanel("Distibution", dist_UI),
+    tabPanel("Correlation", corr_UI)
+    
+  )
 }
 
 plot_Expanded <- function(id, df) {
@@ -153,6 +200,10 @@ plot_Expanded <- function(id, df) {
             scale_color_discrete(labels=c("Your hospital"))+
             #geom_errorbar(aes(ymin=median-sd, ymax=median+sd)) + 
             theme_bw()
+          
+          if(input$selected_trend){
+            plot <- plot + geom_smooth(method="lm")
+          }
           
           if(!is.null(compared_hospitals()) && !is_empty(compared_hospitals())){
             compare_data <- numVars %>% filter(QI == QI_name(), site_name%in%compared_hospitals()) %>% drop_na(Value) %>% 

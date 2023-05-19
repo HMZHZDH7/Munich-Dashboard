@@ -44,7 +44,7 @@ dataLoader <- function() {
   #                    "glucose_level", "insulin_administration", "first_arrival_hosp", "first_hospital"
   #  )
   
-  catVars_cols <- c(key_cols,"discharge_mrs", "prenotification", "imaging_done", "gender")
+  catVars_cols <- c("site_id", "YQ", "subject_id", "discharge_mrs", "prenotification", "imaging_done", "gender")
   
   #Selecting numerical data 
   numVars <- dataset %>% select(all_of(numVars_cols)) 
@@ -79,9 +79,7 @@ dataLoader <- function() {
   #catVars <- catVars %>% pivot_longer(-key_cols, names_to = "QI", values_to = "Value")
   
   numVarswithcats <- numVars %>% left_join(catVars, 
-                               by=c('site_name'='site_name', 'YQ'='YQ', 'subject_id'='subject_id',
-                                    'site_country'='site_country', 'site_id'='site_id', 
-                                    'discharge_year'='discharge_year', 'discharge_quarter'='discharge_quarter'))
+                               by=c('YQ'='YQ', 'subject_id'='subject_id','site_id'='site_id'))
   #view(numVarswithcats)
   return(list("numVars" = numVarswithcats))
 }
