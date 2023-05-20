@@ -276,16 +276,58 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
                             "2020 Q1", "2020 Q2", "2020 Q3", "2020 Q4",
                             "2021 Q1", "2021 Q2", "2021 Q3", "2021 Q4",
                             "2022 Q1", "2022 Q2", "2022 Q3", "2022 Q4")), 
-      ), )  
-  )
+      ), ) )
+  
+  comp_UI <- tagList(
+    plotlyOutput(
+      outputId = ns("compPlot")
+    ),
+    fixedRow(
+     column(3,
+            h3("Plot characteristics"),     
+            selectInput(
+              inputId = ns("selected_col_comp"),
+              label = h6("Select y-axis variable"),
+              choices = database,
+              selected = "Door-to-imaging time"),
+            
+            selectInput(
+              inputId = ns("selected_split_comp"),
+              label = h6("Select factor to compare data"),
+              choices = c("Gender", "mRS", "Prenotification", "Imaging done", "Physiotherapy initiated"),
+              selected = "Gender"),
+            ),
+     
+     
+
+            column(3,
+                   h3("Filter by values"),     
+                   sliderInput(ns("slider_minmax_com"), label = h6("Filter values of y-axis variable (slider shows range of values in y-axis variable)"),
+                               min = 0, max = 100, value = c(0, 100)),
+                   
+                   checkboxGroupInput(
+                     inputId = ns("selected_quarts_com"),
+                     label = h6("Quarters shown in plot:"),
+                     choices = c("2018 Q1", "2018 Q2", "2018 Q3", "2018 Q4",
+                                 "2019 Q1", "2019 Q2", "2019 Q3", "2019 Q4",
+                                 "2020 Q1", "2020 Q2", "2020 Q3", "2020 Q4",
+                                 "2021 Q1", "2021 Q2", "2021 Q3", "2021 Q4",
+                                 "2022 Q1", "2022 Q2", "2022 Q3", "2022 Q4"),
+                     selected = c("2018 Q1", "2018 Q2", "2018 Q3", "2018 Q4",
+                                  "2019 Q1", "2019 Q2", "2019 Q3", "2019 Q4",
+                                  "2020 Q1", "2020 Q2", "2020 Q3", "2020 Q4",
+                                  "2021 Q1", "2021 Q2", "2021 Q3", "2021 Q4",
+                                  "2022 Q1", "2022 Q2", "2022 Q3", "2022 Q4")), 
+            ),
+    ))
   
   #Here we select to output the plot and table under a tabsetPanel format, where the user can choose to look at either the plot or the underlying datatable
   tabsetPanel(
     type = "tabs",
     tabPanel("Timeline", plot_UI),
     tabPanel("Distibution", dist_UI),
-    tabPanel("Correlation", corr_UI)
-    
+    tabPanel("Correlation", corr_UI),
+    tabPanel("Sub-group comparisons", comp_UI)
   )
 }
 
@@ -443,6 +485,16 @@ plot_Expanded <- function(id, df) {
       corrplot <- ggplot(data = QI_data_corr, aes(x = Value.x, y = Value.y)) +
         geom_point(color="#D16A00") + 
         theme_bw()
+    })
+    
+    output$compPlot <- renderPlotly({
+      QI_data_comp <- numVars %>% filter(QI == QI_name(), site_name=="Samaritan") %>% drop_na(Value) %>% 
+        group_by(site_name, site_country) 
+      
+      corrplot <- ggplot(data = QI_data_comp, aes(x = as.factor(gender), y = Value, color=as.factor(gender))) +
+        geom_boxplot(notch = TRUE) + 
+        theme_bw() + theme(legend.position = "none", axis.title.x = element_blank())+ 
+        scale_x_discrete(labels=c("0" = "Female", "1" = "Male"))
     })
       
     }
