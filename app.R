@@ -37,6 +37,9 @@ QI_db <- QILoader()
 QI_name <- reactiveVal("Door-to-imaging time")
 QI_name_dist <- reactiveVal("Door-to-imaging time")
 
+QI_name_x_corr <- reactiveVal("Door-to-imaging time")
+QI_name_y_corr <- reactiveVal("Modified ranking scale discharge")
+
 compared_hospitals <- reactiveVal(NULL)
 compare_national <- reactiveVal(TRUE)
 
