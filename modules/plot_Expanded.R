@@ -390,8 +390,7 @@ plot_Expanded <- function(id, df) {
         if(!is.null(QI_name())) {
           
           QI_filt <- numVars %>% filter(QI == QI_name(), site_name=="Samaritan") %>% drop_na(Value)
-          View(QI_filt)
-          
+
           updateSliderInput(session, "slider_minmax", value = c(min(QI_filt$Value), max(QI_filt$Value)),
                             min = min(QI_filt$Value), max = max(QI_filt$Value), step = 5)
 
