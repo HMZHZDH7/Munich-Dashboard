@@ -79,7 +79,9 @@ dataLoader <- function() {
   #catVars <- catVars %>% pivot_longer(-key_cols, names_to = "QI", values_to = "Value")
   
   numVarswithcats <- numVars %>% left_join(catVars, 
-                               by=c('YQ'='YQ', 'subject_id'='subject_id','site_id'='site_id'))
+                               by=c('YQ'='YQ', 'subject_id'='subject_id','site_id'='site_id')) %>% replace_na(list(gender=floor(runif(1, min=0, max=2)), imagine_done =0, prenotification=0, discharge_mrs=floor(runif(1, min=0, max=7))))
+  
+  
   #view(numVarswithcats)
   return(list("numVars" = numVarswithcats))
 }

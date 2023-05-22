@@ -68,8 +68,8 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
              checkboxGroupInput(
                inputId = ns("selected_mrs"),
                label = h6("mRS of patients in plot"),
-               choices = c(1:5),
-               selected = c(1:5))  
+               choices = c(0:6),
+               selected = c(0:6))  
       ),
       column(3,
              h3("Filter by values"),     
@@ -129,7 +129,7 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
              selectInput(
                inputId = ns("selected_comparisons_dist"),
                label = h6("Compare with hospitals"),
-               choices = hospitals,
+               choices = c("", "Paradise", "Angelvale", "Rose", "General", "Mercy", "Hope"),
                selected = NULL)  
       ),
       column(3, 
@@ -156,8 +156,8 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
              checkboxGroupInput(
                inputId = ns("selected_mrs_dist"),
                label = h6("mRS of patients in plot"),
-               choices = c(1:5),
-               selected = c(1:5))  
+               choices = c(0:6),
+               selected = c(0:6))  
       ),
       column(3,
              h3("Filter by values"),     
@@ -252,8 +252,8 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
              checkboxGroupInput(
                inputId = ns("selected_mrs_corr"),
                label = h6("mRS of patients in plot"),
-               choices = c(1:5),
-               selected = c(1:5))  
+               choices = c(0:6),
+               selected = c(0:6))  
       ),
       column(3,
              h3("Filter by values"),     
@@ -336,140 +336,208 @@ plot_Expanded <- function(id, df) {
     id,
     function(input, output, session) {
       observeEvent(input$selected_col,{
-        
         index <- match(input$selected_col, df$INDICATOR)
         QI_col <- df$COLUMN[index]
-        
-        
         QI_name(QI_col)
+        QI_filt <- numVars %>% filter(QI == QI_name(), site_name=="Samaritan") %>% drop_na(Value)
+        
+        updateSliderInput(session, "slider_minmax", value = c(min(QI_filt$Value),max(QI_filt$Value)),
+                          min = min(QI_filt$Value), max = max(QI_filt$Value), step = 1)
       })
-      
+      observeEvent(input$selected_colx,{
+        if (input$selected_colx=="standard deviation") {
+          QI_agg("sd")
+        } else if (input$selected_colx=="minimum"){
+          QI_agg("min")
+        } else if (input$selected_colx=="maximum"){
+          QI_agg("max")
+        } else {
+          QI_agg(input$selected_colx)
+        }
+      })
+      observeEvent(input$selected_trend, {
+        QI_trend(input$selected_trend)
+      }, ignoreNULL=FALSE)
+      observeEvent(input$selected_error, {
+        QI_error(input$selected_error)
+      }, ignoreNULL=FALSE)
+      observeEvent(input$selected_genders, {
+        sg <- input$selected_genders
+        sg[sg=="Male"] <- 1
+        sg[sg=="Female"] <- 0
+        QI_gender(sg)
+      }, ignoreNULL=FALSE)
+      observeEvent(input$selected_imagingdone, {
+        id <- input$selected_imagingdone
+        id[id=="Done"] <- 1
+        id[id=="Not done"] <- 0
+        QI_imaging(id)
+      }, ignoreNULL=FALSE)
+      observeEvent(input$selected_prenotification, {
+        p <- input$selected_prenotification
+        p[p=="Prenotified"] <- 1
+        p[p=="Not prenotified"] <- 0
+        QI_prenotification(p)
+      }, ignoreNULL=FALSE)
+      observeEvent(input$selected_mrs, {
+        QI_mrs(input$selected_mrs)
+      }, ignoreNULL=FALSE)
       observeEvent(input$selected_comparisons,{
         compared_hospitals(input$selected_comparisons)
       }, ignoreNULL=FALSE)
-      
       observeEvent(input$selected_natcomparisons,{
         if(!compare_national())
         {compare_national(TRUE)}
         else
         {compare_national(FALSE)}
-        
       })
+      observeEvent(input$slider_minmax, {
+        QI_filterminmax(input$slider_minmax[1]:input$slider_minmax[2])
+      })
+      observeEvent(input$selected_quarts, {
+        QI_filterquarts(input$selected_quarts)
+      })
+      
+      
       
       observeEvent(input$selected_col_dist,{
-        
         index <- match(input$selected_col_dist, df$INDICATOR)
         QI_col <- df$COLUMN[index]
-        
-        
         QI_name_dist(QI_col)
       })
+      observeEvent(input$selected_comparisons_dist,{
+        compared_hospitals_dist(input$selected_comparisons_dist)
+      })
+      observeEvent(input$selected_natcomparisons_dist,{
+        if(compare_national_dist())
+        {compare_national_dist(FALSE)}
+        else
+        {compare_national_dist(TRUE)}
+      })
+      observeEvent(input$selected_genders_dist, {
+        sg_dist <- input$selected_genders_dist
+        sg_dist[sg_dist=="Male"] <- 1
+        sg_dist[sg_dist=="Female"] <- 0
+        QI_gender_dist(sg_dist)
+      }, ignoreNULL=FALSE)
+      observeEvent(input$selected_imagingdone_dist, {
+        id_dist <- input$selected_imagingdone_dist
+        id_dist[id_dist=="Done"] <- 1
+        id_dist[id_dist=="Not done"] <- 0
+        QI_imaging_dist(id_dist)
+      }, ignoreNULL=FALSE)
+      observeEvent(input$selected_prenotification_dist, {
+        p_dist <- input$selected_prenotification_dist
+        p_dist[p_dist=="Prenotified"] <- 1
+        p_dist[p_dist=="Not prenotified"] <- 0
+        QI_prenotification_dist(p_dist)
+      }, ignoreNULL=FALSE)
+      observeEvent(input$selected_mrs_dist, {
+        QI_mrs_dist(input$selected_mrs_dist)
+      }, ignoreNULL=FALSE)
+      
+      
       
       observeEvent(input$selected_colx_corr,{
-        
         index <- match(input$selected_colx_corr, df$INDICATOR)
         QI_col <- df$COLUMN[index]
-        
-        
         QI_name_x_corr(QI_col)
       })
-      
       observeEvent(input$selected_coly_corr,{
-        
         index <- match(input$selected_coly_corr, df$INDICATOR)
         QI_col <- df$COLUMN[index]
-        
-        
         QI_name_y_corr(QI_col)
       })
-      #validate(need(df(), "Waiting for data..."), errorClass = character(0))
-      #QI_data <- df
-      #browser()
-      #       # Here we see the interactive plot. It selects from the database the chosen columns via input$variableName and generates a plot for it.
+      
+      
       output$plot <- renderPlotly({
         if(!is.null(QI_name())) {
-          
-          QI_filt <- numVars %>% filter(QI == QI_name(), site_name=="Samaritan") %>% drop_na(Value)
-
-          updateSliderInput(session, "slider_minmax", value = c(min(QI_filt$Value), max(QI_filt$Value)),
-                            min = min(QI_filt$Value), max = max(QI_filt$Value), step = 5)
-
-          QI_data <- numVars %>% filter(QI == QI_name(), site_name=="Samaritan") %>% drop_na(Value) %>% 
-            group_by(YQ, site_name, site_country) %>% 
+        
+          QI_data <- numVars %>% filter(QI == QI_name(), site_name=="Samaritan", gender %in% QI_gender(), imaging_done %in% QI_imaging(), prenotification%in%QI_prenotification(), discharge_mrs%in%QI_mrs(),YQ%in%QI_filterquarts(), Value%in%QI_filterminmax()) %>% 
+            drop_na(Value) %>% group_by(YQ, site_name, site_country) %>% 
             mutate(median = median(Value), sd = sd(Value), min=min(Value),
-                      max=max(Value),.groups = "drop") %>% ungroup()
+                      max=max(Value), mean=mean(Value), .groups = "drop") %>% ungroup()
           
           
-          #if(!is.null(compared_hospitals())) {
-          #  compare_data <- numVars %>% filter(QI == QI_name(), site_name==compared_hospitals()) %>% na.omit() %>% 
-          #    group_by(site_name,YQ) %>% 
-          #    summarise(median = median(Value), sd = sd(Value), min=min(Value), max=max(Value),.groups = "drop")
-          #  view(compare_data)
-          #}
-          #else{
-          #  compared_hospitals(NULL)
-          #}
-          
-          
-          
-          
-          
-          
-          #plot <- ggplot(database, aes(x = .data[[input$selected_col]], y = .data[[input$selected_col2]])) +
-          #geom_point()
-          plot <- ggplot(QI_data, aes(x = YQ, y = median)) +
+          plot <- ggplot(QI_data, aes(x = YQ, y = .data[[QI_agg()]])) +
             geom_line(aes(group = 1,linetype = site_name), color="#D16A00", linetype="solid") +
             geom_point(color="#D16A00") +
-            geom_text(aes(label=median), size=3, nudge_y = 2, color="black") +
+            geom_text(aes(label=.data[[QI_agg()]]), size=3, nudge_y = 2, color="black") +
             scale_color_discrete(labels=c("Your hospital"))+
-            #geom_errorbar(aes(ymin=median-sd, ymax=median+sd)) + 
-            theme_bw()
+            theme_bw() 
           
-          if(input$selected_trend){
+          if(QI_trend()){
             plot <- plot + geom_smooth(method="lm")
           }
           
+          if(QI_error()){
+            plot <- plot + geom_errorbar(aes(ymin=min, ymax=(max-sd), color="#D16A00",alpha = 0.5))
+          }
+          
           if(!is.null(compared_hospitals()) && !is_empty(compared_hospitals())){
-            compare_data <- numVars %>% filter(QI == QI_name(), site_name%in%compared_hospitals()) %>% drop_na(Value) %>% 
-              group_by(site_name,YQ) %>% 
-              summarise(median = median(Value), sd = sd(Value), min=min(Value), max=max(Value))  %>% ungroup()
+            compare_data <- numVars %>% filter(QI == QI_name(), site_name%in%compared_hospitals(), gender %in% QI_gender(), imaging_done %in% QI_imaging(), prenotification%in%QI_prenotification(), discharge_mrs%in%QI_mrs(),YQ%in%QI_filterquarts(), Value%in%QI_filterminmax()) %>% 
+            drop_na(Value) %>%  group_by(site_name,YQ) %>% 
+              mutate(median = median(Value), sd = sd(Value), min=min(Value),
+                     max=max(Value), mean=mean(Value), .groups = "drop") %>% ungroup()
             
             
             
             plot <- plot + 
-              geom_line(data=compare_data, aes(y = median, group=site_name,linetype = site_name), color="grey",alpha = 0.5) +
-              geom_point(data=compare_data, aes(y = median), color="grey",alpha = 0.5)
+              geom_line(data=compare_data, aes(y = .data[[QI_agg()]], group=site_name,linetype = site_name), color="grey",alpha = 0.5) +
+              geom_point(data=compare_data, aes(y = .data[[QI_agg()]]), color="grey",alpha = 0.5)
           }
           
           if(compare_national()==TRUE){
-            compare_nat_data <- numVars %>% filter(QI == QI_name(), site_name!="Samaritan") %>% drop_na(Value) %>% 
-              group_by(YQ) %>% 
-              summarise(median = median(Value), sd = sd(Value), min=min(Value), max=max(Value),.groups = "drop")
+            
+            compare_nat_data <- numVars %>% filter(QI == QI_name(), site_name!="Samaritan", gender %in% QI_gender(), imaging_done %in% QI_imaging(), prenotification%in%QI_prenotification(), discharge_mrs%in%QI_mrs(),YQ%in%QI_filterquarts(), Value%in%QI_filterminmax()) %>% 
+            drop_na(Value) %>% group_by(YQ) %>% 
+              mutate(median = median(Value), sd = sd(Value), min=min(Value),
+                     max=max(Value), mean=mean(Value), .groups = "drop") %>% ungroup()
             
             
             plot <- plot + 
-              geom_line(data=compare_nat_data, aes(group = 1,y = median), color="#56B4E9",alpha = 0.5, linetype="solid") +
-              geom_point(data=compare_nat_data, aes(y = median), color="#56B4E9",alpha = 0.5)
+              geom_line(data=compare_nat_data, aes(group = 1,y = .data[[QI_agg()]]), color="#56B4E9",alpha = 0.5, linetype="solid") +
+              geom_point(data=compare_nat_data, aes(y = .data[[QI_agg()]]), color="#56B4E9",alpha = 0.5)
           }
           
           
           ggplotly(plot)
         }
       })
+      
       output$distPlot <- renderPlotly({
         
         
-        QI_data_dist <- numVars %>% filter(QI == QI_name_dist(), site_name=="Samaritan") %>% drop_na(Value) %>% 
+        QI_data_dist <- numVars %>% filter(QI == QI_name_dist(), site_name=="Samaritan", gender %in% QI_gender_dist(), imaging_done %in% QI_imaging_dist(), prenotification%in%QI_prenotification_dist(), discharge_mrs%in%QI_mrs_dist()) %>% drop_na(Value) %>% 
           group_by(site_name, site_country) 
-        #  mutate(median = median(Value), sd = sd(Value), min=min(Value),
-        #         max=max(Value),.groups = "drop") %>% ungroup()
         
         
-        disPlot <- ggplot(QI_data_dist, aes(x = Value)) +
+        distPlot <- ggplot(QI_data_dist, aes(x = Value)) +
           geom_density(aes(group = 1), color="#D16A00", linetype="solid") +
           scale_color_discrete(labels=c("Your hospital"))+
-          #geom_errorbar(aes(ymin=median-sd, ymax=median+sd)) + 
           theme_bw()
+        
+        if(compare_national_dist()==TRUE){
+        
+          compare_nat_data_dist <- numVars %>% filter(QI == QI_name_dist(), site_name!="Samaritan", gender %in% QI_gender_dist(), imaging_done %in% QI_imaging_dist(), prenotification%in%QI_prenotification_dist(), discharge_mrs%in%QI_mrs_dist()) %>% 
+            drop_na(Value) %>% group_by(site_country)
+          
+          
+          distPlot <- distPlot + 
+            geom_density(data=compare_nat_data_dist, aes(group = 1), color="#56B4E9",alpha = 0.5, linetype="solid")
+        }
+        
+        if(!is.null(compared_hospitals_dist()) && !is_empty(compared_hospitals_dist()) && compared_hospitals_dist()!=""){
+          compare_data_dist <- numVars %>% filter(QI == QI_name(), site_name==compared_hospitals_dist(), gender %in% QI_gender_dist(), imaging_done %in% QI_imaging_dist(), prenotification%in%QI_prenotification_dist(), discharge_mrs%in%QI_mrs_dist()) %>% 
+            drop_na(Value) %>%  group_by(site_name)
+          
+          
+          
+          distPlot <- distPlot + 
+            geom_density(data=compare_data_dist, aes(group=1), color="grey",alpha = 0.5, linetype="solid")
+        }
+        
+        ggplotly(distPlot)
       })
       
     output$corrPlot <- renderPlotly({
