@@ -61,6 +61,13 @@ QI_mrs_dist <- reactiveVal(c(0:6))
 
 QI_name_x_corr <- reactiveVal("Door-to-imaging time")
 QI_name_y_corr <- reactiveVal("Modified ranking scale discharge")
+QI_filterminmax_corr <- reactiveVal(NULL)
+QI_filterquarts_corr <- reactiveVal(NULL) 
+QI_gender_corr <- reactiveVal(c(0, 1))
+QI_prenotification_corr <- reactiveVal(c(1, 0))
+QI_imaging_corr <- reactiveVal(c(1, 0))
+QI_mrs_corr <- reactiveVal(c(0:6))
+QI_breakdown_corr<- reactiveVal(NULL)
 
 QI_name_comp <- reactiveVal("Door-to-imaging time")
 

@@ -198,25 +198,13 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
                selected = "Door-to-imaging time"),
              
              selectInput(
-               inputId = ns("selected_colx_agg_corr"),
-               label = h6("Select aggregation type for x-axis"),
-               choices = c("median", "mean", "standard deviation", "minimum", "maximum"),
-               selected = "median"),
-             
-             selectInput(
                inputId = ns("selected_coly_corr"),
                label = h6("Select y-axis variable"),
                choices = database,
                selected = "Modified ranking scale discharge"),
              
-             selectInput(
-               inputId = ns("selected_coly_agg_corr"),
-               label = h6("Select aggregation type for y-axis"),
-               choices = c("median", "mean", "standard deviation", "minimum", "maximum"),
-               selected = "median"),
-             
              h6("Show trend line"),
-             checkboxInput(inputId = ns("selected_tredline_corr"), "Show trend line", value = FALSE),
+             checkboxInput(inputId = ns("selected_trendline_corr"), "Show trend line", value = FALSE),
             
       ),
       column(3,
@@ -404,6 +392,9 @@ plot_Expanded <- function(id, df) {
         index <- match(input$selected_col_dist, df$INDICATOR)
         QI_col <- df$COLUMN[index]
         QI_name_dist(QI_col)
+        QI_filt <- numVars %>% filter(QI == QI_name_dist(), site_name=="Samaritan") %>% drop_na(Value)
+        updateSliderInput(session, "slider_minmax_dist", value = c(min(QI_filt$Value),max(QI_filt$Value)),
+                          min = min(QI_filt$Value), max = max(QI_filt$Value), step = 1)
       })
       observeEvent(input$selected_comparisons_dist,{
         compared_hospitals_dist(input$selected_comparisons_dist)
@@ -434,6 +425,18 @@ plot_Expanded <- function(id, df) {
       }, ignoreNULL=FALSE)
       observeEvent(input$selected_mrs_dist, {
         QI_mrs_dist(input$selected_mrs_dist)
+      }, ignoreNULL=FALSE)
+      observeEvent(input$slider_minmax_dist, {
+        QI_filterminmax_dist(input$slider_minmax_dist[1]:input$slider_minmax_dist[2])
+      })
+      observeEvent(input$selected_quarts_dist, {
+        QI_filterquarts_dist(input$selected_quarts_dist)
+      })
+      observeEvent(input$selected_mean_dist, {
+        QI_mean_dist(input$selected_mean_dist)
+      }, ignoreNULL=FALSE)
+      observeEvent(input$selected_median_dist, {
+        QI_median_dist(input$selected_median_dist)
       }, ignoreNULL=FALSE)
       
       
@@ -508,7 +511,7 @@ plot_Expanded <- function(id, df) {
       output$distPlot <- renderPlotly({
         
         
-        QI_data_dist <- numVars %>% filter(QI == QI_name_dist(), site_name=="Samaritan", gender %in% QI_gender_dist(), imaging_done %in% QI_imaging_dist(), prenotification%in%QI_prenotification_dist(), discharge_mrs%in%QI_mrs_dist()) %>% drop_na(Value) %>% 
+        QI_data_dist <- numVars %>% filter(QI == QI_name_dist(), site_name=="Samaritan", gender %in% QI_gender_dist(), imaging_done %in% QI_imaging_dist(), prenotification%in%QI_prenotification_dist(), discharge_mrs%in%QI_mrs_dist(),YQ%in%QI_filterquarts_dist(), Value%in%QI_filterminmax_dist()) %>% drop_na(Value) %>% 
           group_by(site_name, site_country) 
         
         
@@ -517,9 +520,17 @@ plot_Expanded <- function(id, df) {
           scale_color_discrete(labels=c("Your hospital"))+
           theme_bw()
         
+        if(QI_mean_dist()){
+          distPlot <- distPlot + geom_vline(xintercept = mean(QI_data_dist$Value), size=1.5, color="red",linetype=3)
+        }
+        
+        if(QI_median_dist()){
+          distPlot <- distPlot + geom_vline(xintercept = median(QI_data_dist$Value), size=1.5, color="red")
+        }
+        
         if(compare_national_dist()==TRUE){
         
-          compare_nat_data_dist <- numVars %>% filter(QI == QI_name_dist(), site_name!="Samaritan", gender %in% QI_gender_dist(), imaging_done %in% QI_imaging_dist(), prenotification%in%QI_prenotification_dist(), discharge_mrs%in%QI_mrs_dist()) %>% 
+          compare_nat_data_dist <- numVars %>% filter(QI == QI_name_dist(), site_name!="Samaritan", gender %in% QI_gender_dist(), imaging_done %in% QI_imaging_dist(), prenotification%in%QI_prenotification_dist(), discharge_mrs%in%QI_mrs_dist(),YQ%in%QI_filterquarts_dist(), Value%in%QI_filterminmax_dist()) %>% 
             drop_na(Value) %>% group_by(site_country)
           
           
@@ -528,7 +539,7 @@ plot_Expanded <- function(id, df) {
         }
         
         if(!is.null(compared_hospitals_dist()) && !is_empty(compared_hospitals_dist()) && compared_hospitals_dist()!=""){
-          compare_data_dist <- numVars %>% filter(QI == QI_name(), site_name==compared_hospitals_dist(), gender %in% QI_gender_dist(), imaging_done %in% QI_imaging_dist(), prenotification%in%QI_prenotification_dist(), discharge_mrs%in%QI_mrs_dist()) %>% 
+          compare_data_dist <- numVars %>% filter(QI == QI_name(), site_name==compared_hospitals_dist(), gender %in% QI_gender_dist(), imaging_done %in% QI_imaging_dist(), prenotification%in%QI_prenotification_dist(), discharge_mrs%in%QI_mrs_dist(),YQ%in%QI_filterquarts_dist(), Value%in%QI_filterminmax_dist()) %>% 
             drop_na(Value) %>%  group_by(site_name)
           
           
