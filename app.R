@@ -68,6 +68,7 @@ QI_prenotification_corr <- reactiveVal(c(1, 0))
 QI_imaging_corr <- reactiveVal(c(1, 0))
 QI_mrs_corr <- reactiveVal(c(0:6))
 QI_breakdown_corr<- reactiveVal(NULL)
+QI_trend_corr <- reactiveVal(FALSE)
 
 QI_name_comp <- reactiveVal("Door-to-imaging time")
 

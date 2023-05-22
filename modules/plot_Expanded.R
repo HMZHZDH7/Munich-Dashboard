@@ -451,7 +451,30 @@ plot_Expanded <- function(id, df) {
         QI_col <- df$COLUMN[index]
         QI_name_y_corr(QI_col)
       })
-      
+      observeEvent(input$selected_trendline_corr, {
+        QI_trend_corr(input$selected_trendline_corr)
+      }, ignoreNULL=FALSE)
+      observeEvent(input$selected_genders_corr, {
+        sg_corr <- input$selected_genders_corr
+        sg_corr[sg_corr=="Male"] <- 1
+        sg_corr[sg_corr=="Female"] <- 0
+        QI_gender_corr(sg_corr)
+      }, ignoreNULL=FALSE)
+      observeEvent(input$selected_imagingdone_corr, {
+        id_corr <- input$selected_imagingdone_corr
+        id_corr[id_corr=="Done"] <- 1
+        id_corr[id_corr=="Not done"] <- 0
+        QI_imaging_corr(id_corr)
+      }, ignoreNULL=FALSE)
+      observeEvent(input$selected_prenotification_corr, {
+        p_corr <- input$selected_prenotification_corr
+        p_corr[p_corr=="Prenotified"] <- 1
+        p_corr[p_corr=="Not prenotified"] <- 0
+        QI_prenotification_corr(p_corr)
+      }, ignoreNULL=FALSE)
+      observeEvent(input$selected_mrs_corr, {
+        QI_mrs_corr(input$selected_mrs_corr)
+      }, ignoreNULL=FALSE)
       
       output$plot <- renderPlotly({
         if(!is.null(QI_name())) {
@@ -552,10 +575,10 @@ plot_Expanded <- function(id, df) {
       })
       
     output$corrPlot <- renderPlotly({
-      QI_data_x_corr <- numVars %>% filter(QI == QI_name_x_corr(), site_name=="Samaritan") %>% drop_na(Value) %>% 
+      QI_data_x_corr <- numVars %>% filter(QI == QI_name_x_corr(), site_name=="Samaritan", gender %in% QI_gender_corr(), imaging_done %in% QI_imaging_corr(), prenotification%in%QI_prenotification_corr(), discharge_mrs%in%QI_mrs_corr()) %>% drop_na(Value) %>% 
         group_by(site_name, site_country) 
       
-      QI_data_y_corr <- numVars %>% filter(QI == QI_name_y_corr(), site_name=="Samaritan") %>% drop_na(Value) %>% 
+      QI_data_y_corr <- numVars %>% filter(QI == QI_name_y_corr(), site_name=="Samaritan", gender %in% QI_gender_corr(), imaging_done %in% QI_imaging_corr(), prenotification%in%QI_prenotification_corr(), discharge_mrs%in%QI_mrs_corr()) %>% drop_na(Value) %>% 
         group_by(site_name, site_country) 
       
       QI_data_corr <- merge(QI_data_x_corr, QI_data_y_corr, by = c("YQ", "site_name", "site_id", "subject_id"))
@@ -563,6 +586,12 @@ plot_Expanded <- function(id, df) {
       corrplot <- ggplot(data = QI_data_corr, aes(x = Value.x, y = Value.y)) +
         geom_point(color="#D16A00") + 
         theme_bw()
+      
+      if(QI_trend_corr()){
+        corrplot <- corrplot + geom_smooth(method="lm", se=F)
+      }
+      
+      ggplotly(corrplot)
     })
     
     output$compPlot <- renderPlotly({
