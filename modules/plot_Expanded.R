@@ -448,6 +448,7 @@ plot_Expanded <- function(id, df) {
       
       observeEvent(input$selected_colx_corr,{
         index <- match(input$selected_colx_corr, df$INDICATOR)
+        QI_xlab_corr(input$selected_colx_corr)
         QI_col <- df$COLUMN[index]
         QI_name_x_corr(QI_col)
         QI_filt <- numVars %>% filter(QI == QI_name_x_corr(), site_name=="Samaritan") %>% drop_na(Value)
@@ -456,6 +457,7 @@ plot_Expanded <- function(id, df) {
       })
       observeEvent(input$selected_coly_corr,{
         index <- match(input$selected_coly_corr, df$INDICATOR)
+        QI_ylab_corr(input$selected_coly_corr)
         QI_col <- df$COLUMN[index]
         QI_name_y_corr(QI_col)
         QI_filt <- numVars %>% filter(QI == QI_name_y_corr(), site_name=="Samaritan") %>% drop_na(Value)
@@ -520,6 +522,7 @@ plot_Expanded <- function(id, df) {
       
       observeEvent(input$selected_col_comp,{
         index <- match(input$selected_col_comp, df$INDICATOR)
+        QI_ylab_comp(input$selected_col_comp)
         QI_col <- df$COLUMN[index]
         QI_name_comp(QI_col)
         QI_filt <- numVars %>% filter(QI == QI_name_comp(), site_name=="Samaritan") %>% drop_na(Value)
@@ -536,18 +539,25 @@ plot_Expanded <- function(id, df) {
         # Physiotherapy initiated", "Test for dysphagia screen"),
         if (input$selected_split_comp=="Gender") {
           QI_split_comp("gender")
+          QI_xlab_comp(c("0" = "Female", "1" = "Male"))
         } else if (input$selected_split_comp=="mRS on discharge") {
           QI_split_comp("discharge_mrs")
+          QI_xlab_comp(c(0:6))
         } else if (input$selected_split_comp=="3-month mRS") {
           QI_split_comp("three_m_mrs")
+          QI_xlab_comp(c(0:6))
         } else if (input$selected_split_comp=="Arrival pre-notified") {
           QI_split_comp("prenotification")
+          QI_xlab_comp(c("0" = "Not prenotified", "1" = "Prenotified"))
         } else if (input$selected_split_comp=="Imaging done") {
           QI_split_comp("imaging_done")
+          QI_xlab_comp(c("0" = "Imaging not done", "1" = "imaging done"))
         } else if (input$selected_split_comp=="Physiotherapy initiated") {
           QI_split_comp("occup_physiotherapy_received")
+          QI_xlab_comp(c("0" = "Physio. not started", "1" = "Physio. started"))
         } else if (input$selected_split_comp=="Test for dysphagia screen") {
           QI_split_comp("dysphagia_screening_done")
+          QI_xlab_comp(c("0" = "Dysphagio not screened", "1" = "Dysphagia screening done"))
         } else {
           QI_split_comp("None")
         }
@@ -623,7 +633,7 @@ plot_Expanded <- function(id, df) {
         distPlot <- ggplot(QI_data_dist, aes(x = Value)) +
           geom_density(aes(group = 1), color="#D16A00", linetype="solid") +
           scale_color_discrete(labels=c("Your hospital"))+
-          theme_bw() + xlab(QI_xlab_dist())#scale_x_discrete(name =QI_xlab_dist())
+          theme_bw() + xlab(QI_xlab_dist())
         
         if(QI_mean_dist()){
           distPlot <- distPlot + geom_vline(xintercept = mean(QI_data_dist$Value), size=1.5, color="red",linetype=3)
@@ -668,10 +678,10 @@ plot_Expanded <- function(id, df) {
       
       if(!is.null(QI_split_corr()) && !is_empty(QI_split_corr()) && QI_split_corr()!="None"){
         corrplot <- ggplot(data = QI_data_corr, aes(x = Value.x, y = Value.y, color=as.factor(.data[[QI_split_corr()]]))) + theme_bw() + 
-          geom_point()
+          geom_point() + xlab(QI_xlab_corr()) + ylab(QI_ylab_corr())
       } else {
         corrplot <- ggplot(data = QI_data_corr, aes(x = Value.x, y = Value.y)) + theme_bw() + 
-          geom_point(color="#D16A00") 
+          geom_point(color="#D16A00") + xlab(QI_xlab_corr()) + ylab(QI_ylab_corr())
         }
 
       if(QI_trend_corr()){
@@ -688,7 +698,7 @@ plot_Expanded <- function(id, df) {
       compPlot <- ggplot(data = QI_data_comp, aes(x = as.factor(.data[[QI_split_comp()]]), y = Value, color=as.factor(.data[[QI_split_comp()]]))) +
         geom_boxplot(notch = TRUE) + 
         theme_bw() + theme(legend.position = "none", axis.title.x = element_blank())+ 
-        scale_x_discrete(labels=c("0" = "Female", "1" = "Male"))
+        scale_x_discrete(labels=QI_xlab_comp()) + ylab(QI_ylab_comp())
     })
       
     }

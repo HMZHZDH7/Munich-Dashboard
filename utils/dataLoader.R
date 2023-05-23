@@ -44,7 +44,7 @@ dataLoader <- function() {
   #                    "glucose_level", "insulin_administration", "first_arrival_hosp", "first_hospital"
   #  )
   
-  catVars_cols <- c("site_id", "YQ", "subject_id", "discharge_mrs", "prenotification", "imaging_done", "gender")
+  catVars_cols <- c("site_id", "YQ", "subject_id", "discharge_mrs", "prenotification", "imaging_done", "gender", "occup_physiotherapy_received", "dysphagia_screening_done")
   
   #Selecting numerical data 
   numVars <- dataset %>% select(all_of(numVars_cols)) 
