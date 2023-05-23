@@ -16,9 +16,10 @@ dataLoader <- function() {
   numVars_cols <- c( key_cols,"age", "nihss_score", "door_to_needle", "door_to_groin",
                      "door_to_imaging", "onset_to_door", "discharge_nihss_score", "glucose", "cholesterol", "sys_blood_pressure", "prestroke_mrs",
                      "dis_blood_pressure", "perfusion_core", "hypoperfusion_core", "bleeding_volume_value",
-                     "discharge_mrs","three_m_mrs", "gender", "hospital_stroke", "dysphagia_screening_done", 
-                     "physiotherapy_start_within_3days", "occup_physiotherapy_received", 
-                     "prenotification", "imaging_done", "ich_score", "hunt_hess_score", "bleeding_source")
+                     "discharge_mrs","three_m_mrs", "gender", "hospital_stroke", "dysphagia_screening_done", "risk_previous_ischemic_stroke", 
+                     "risk_previous_hemorrhagic_stroke", 
+                     "physiotherapy_start_within_3days", "occup_physiotherapy_received", "glucose","risk_hypertension","risk_diabetes", "prestroke_mrs",
+                     "prenotification", "imaging_done", "ich_score", "thrombolysis","cholesterol")
   
   #  catVars_cols <- c(key_cols, "hospitalized_in","department_type", "stroke_type", "thrombectomy", 
   #                    "thrombolysis", "no_thrombolysis_reason", "imaging_type", "before_onset_antidiabetics",
@@ -44,7 +45,7 @@ dataLoader <- function() {
   #                    "glucose_level", "insulin_administration", "first_arrival_hosp", "first_hospital"
   #  )
   
-  catVars_cols <- c("site_id", "YQ", "subject_id", "discharge_mrs", "prenotification", "imaging_done", "gender", "occup_physiotherapy_received", "dysphagia_screening_done")
+  catVars_cols <- c("site_id", "YQ", "subject_id", "discharge_mrs", "prenotification", "imaging_done", "three_m_mrs","gender", "occup_physiotherapy_received", "dysphagia_screening_done")
   
   #Selecting numerical data 
   numVars <- dataset %>% select(all_of(numVars_cols)) 

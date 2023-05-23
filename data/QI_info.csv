@@ -1,22 +1,21 @@
 ﻿Number,TAB,INDICATOR,ABBREVIATION,COLUMN,ATTRIBUTE_TYPE,SUMMARIZE_BY,NEW_DASHBOARD_VIS,PERCENTAGE
 1,PC,Age,QI0,age,Quantitative,median,number,0
 2,PC,Gender,,gender,Categorical,%,stacked_bargraph,0
-3,PC,NIHSS,,nihss_score,Quantitative,median,trend,0
+3,PC,NIHSS,QI,nihss_score,Quantitative,median,trend,0
 4,PC,BP systolic,,sys_blood_pressure,Quantitative,mean,trend,0
 5,PC,BP diastolic,,dis_blood_pressure,Quantitative,mean,trend,0
-6,PC,Glucose,,glucose,Quantitative,mean,trend,0
-7,PC,LDL cholestorol,,cholesterol,Quantitative,mean,trend,0
-8,PC,mRS 2-5,,prestroke_mrs,Quantitative,%,trend,0
+6,PC,Glucose,QI,glucose,Quantitative,mean,trend,0
+7,PC,LDL cholestorol,QI,cholesterol,Quantitative,mean,trend,0
+8,PC,mRS 2-5,QI,prestroke_mrs,Quantitative,%,trend,0
 9,PC,COVID positive,,covid_test,Categorical_binary,%,trend,1
 10,PC,In-hospital stroke,,hospital_stroke,Categorical_binary,%,trend,1
 11,PC,Arrival pre-notified,QI5,prenotification,Categorical_binary,%,trend,1
-12,PC,Hypertension,,risk_hypertension,Categorical_binary,%,trend,1
-13,PC,Diabetes,,risk_diabetes,Categorical_binary,%,trend,1
+12,PC,Hypertension,QI,risk_hypertension,Categorical_binary,%,trend,1
+13,PC,Diabetes,QI,risk_diabetes,Categorical_binary,%,trend,1
 14,PC,Hyperlipidemia,,risk_hyperlipidemia,Categorical_binary,%,trend,1
 15,PC,Active smoker,,risk_smoker,Categorical_binary,%,trend,1
-16,PC,Previous IS/TIA,,risk_previous_ischemic_stroke,Categorical_binary,%,trend,1
-17,PC,Previous ICH,,risk_previous_hemorrhagic_stroke,Categorical_binary,%,trend,1
-18,PC,Atrial Fib./Flutter,,risk_atrial_fibrilation,Categorical_binary,%,trend,1
+16,PC,Previous IS/TIA,QI,risk_previous_ischemic_stroke,Categorical_binary,%,trend,1
+17,PC,Previous ICH,QI,risk_previous_hemorrhagic_stroke,Categorical_binary,%,trend,1
 19,PC,Cor. Artery Disease / Previous MI,,risk_coronary_artery_disease_or_myocardial_infarction,Categorical_binary,%,trend,1
 20,PC,Cong. Heart Fail,,risk_congestive_heart_failure,Categorical_binary,%,trend,1
 21,PC,HIV,,risk_hiv,Categorical_binary,%,trend,1
@@ -26,8 +25,8 @@
 25,PC,Hospitalized at unit,,hospitalized_in,Categorical,%,stacked_bargraph,1
 26,PC,Hospitalized at department,,department_type,Categorical,%,stacked_bargraph,1
 27,PC,Anti Diabetics,,before_onset_antidiabetics,Categorical_binary,%,trend,1
-28,PC,Anti Hypertensives,,before_onset_antihypertensives,Categorical_binary,%,trend,1
-29,PC,Aspirin (ASA),,before_onset_asa,Categorical_binary,%,trend,1
+28,PC,Anti Hypertensives,,,Categorical_binary,%,trend,1
+29,PC,Aspirin (ASA),,,Categorical_binary,%,trend,1
 30,PC,Cilostazol,,before_onset_cilostazol,Categorical_binary,%,trend,1
 31,PC,Clopidogrel,,before_onset_clopidrogel,Categorical_binary,%,trend,1
 32,PC,Ticagrelol,,before_onset_ticagrelor,Categorical_binary,%,trend,1
@@ -45,7 +44,7 @@
 44,PC,Stroke mimics,,stroke_mimics_diagnosis,Categorical,%,stacked_bargraph,0
 45,Bleeding,ICH volume,QI1,,Categorical_binary,%,trend,0
 46,Bleeding,Infratentorial bleeding,QI2,,Categorical_binary,%,trend,1
-47,Bleeding,Source of bleeding found,QI3,bleeding_source,Categorical_binary,%,trend,1
+47,Bleeding,Source of bleeding found,,bleeding_source,Categorical_binary,%,trend,1
 48,Bleeding,Intraventricular bleeding,QI4,,Categorical_binary,%,trend,1
 49,Bleeding,ICH score,,ich_score,Categorical,%,stacked_bargraph,0
 50,Bleeding,Neurosurgery for ICH,QI6,,Categorical,%,stacked_bargraph,0
@@ -53,7 +52,7 @@
 52,Bleeding,ICH bleeding cause,QI8,,Categorical,%,stacked_bargraph,0
 53,Bleeding,DVT prevention for ICH,QI9,,Categorical,%,stacked_bargraph,0
 54,Bleeding,Hunt-Hess,,hunt_hess_score,Categorical,%,stacked_bargraph,0
-55,Imaging,Imaging modality,QI1,imaging_type,Categorical,%,stacked_bargraph,0
+55,Imaging,Imaging modality,,imaging_type,Categorical,%,stacked_bargraph,0
 56,Imaging,Site of occlusion,QI2,,Categorical,%,stacked_bargraph,0
 57,Imaging,Imaging not done at all,QI3,imaging_done,Categorical_binary,%,trend,1
 58,Imaging,Imaging done but outside your hospital,QI4,,Categorical_binary,%,trend,1
@@ -69,13 +68,12 @@
 68,Treatment,Arrival pre-notified,QI3,,Categorical_binary,%,trend,1
 69,Treatment,"Onset-to-door time for IVT, median",QI4,onset_to_door,Quantitative,median,trend,0
 70,Treatment,"Door-to-needle for IVT, median",QI5,door_to_needle,Quantitative,median,trend,0
-71,Treatment,Number of MT,QI6,thrombectomy,Categorical_binary,count,trend,0
 72,Treatment,% MT only of all ischemic strokes,QI7,,Categorical_binary,%,trend,0
 73,Treatment,% IVT+MT of all ischemic strokes,QI8,,Categorical_binary,%,trend,0
 74,Treatment,"Door-to-groin for MT, median. Direct (primary transport)",QI9,,Quantitative,median,trend,0
 75,Treatment,"Door-to-groin for MT, median. Drip-and-ship (secondary transport)",QI10,,Quantitative,median,trend,0
 76,Treatment,"Door-in-door-out, median. For PSC, transport to CSC for MT",Q11,,Quantitative,median,trend,0
-77,Treatment,TICI scores,Q12,tici_score,Categorical,%,stacked_bargraph,0
+77,Treatment,TICI scores,,tici_score,Categorical,%,stacked_bargraph,0
 78,Treatment,Bleeding after IVT/MT,Q13,,Categorical,%,stacked_bargraph,0
 79,Treatment,Complications after MT,Q14,,Categorical,%,stacked_bargraph,0
 80,Treatment,DVT prevention,Q15,,Categorical,%,stacked_bargraph,0
@@ -94,11 +92,8 @@
 93,PO,Patient examined by occupational therapist,QI9,occup_physiotherapy_received,Categorical_binary,%,trend,1
 94,PO,Who performed swallowing screen,,,Categorical,%,stacked_bargraph,0
 95,PO,Reasons for not providing IVT,,no_thrombolysis_reason,Categorical,%,stacked_bargraph,0
-96,PO,Atrial fibrillation/flutter,Q12,afib_flutter,Categorical,%,stacked_bargraph,1
-97,PO,Test for dysphagia screen,Q13,dysphagia_screening_type,Categorical,%,stacked_bargraph,0
+97,PO,Test for dysphagia screen,,dysphagia_screening_type,Categorical,%,stacked_bargraph,0
 98,Discharge,Anti Diabetics,,,Categorical_binary,%,trend,1
-99,Discharge,Anti Hypertensives,QI2,discharge_antihypertensives,Categorical_binary,%,trend,1
-100,Discharge,Aspirin (ASA) for ischemic stroke/TIA,QI3,discharge_asa,Categorical_binary,%,trend,1
 101,Discharge,Cilostazol,,,Categorical_binary,%,trend,1
 102,Discharge,Clopidogrel,,,Categorical_binary,%,trend,1
 103,Discharge,Ticagrelol,,,Categorical_binary,%,trend,1
