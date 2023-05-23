@@ -47,6 +47,7 @@ QI_filterquarts <- reactiveVal(NULL)
 compared_hospitals <- reactiveVal(NULL)
 compare_national <- reactiveVal(TRUE)
 QI_displayaspercentage <- reactiveVal(NULL)
+QI_ylab <- reactiveVal(NULL)
 
 QI_name_dist <- reactiveVal("Door-to-imaging time")
 QI_mean_dist <- reactiveVal(FALSE)
@@ -74,7 +75,7 @@ QI_split_corr<- reactiveVal(NULL)
 QI_trend_corr <- reactiveVal(FALSE)
 QI_xlab_corr <- reactiveVal(NULL)
 QI_ylab_corr <- reactiveVal(NULL)
-
+QI_splitlab_corr <- reactiveVal(NULL)
 
 QI_name_comp <- reactiveVal("Door-to-imaging time")
 QI_split_comp<- reactiveVal(NULL)

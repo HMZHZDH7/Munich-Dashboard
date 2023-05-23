@@ -325,6 +325,7 @@ plot_Expanded <- function(id, df) {
     function(input, output, session) {
       observeEvent(input$selected_col,{
         index <- match(input$selected_col, df$INDICATOR)
+        QI_ylab(input$selected_col_comp)
         QI_col <- df$COLUMN[index]
         QI_name(QI_col)
         if (df$PERCENTAGE[index]==1) {
@@ -499,6 +500,7 @@ plot_Expanded <- function(id, df) {
       })
       observeEvent(input$selected_split_corr, {
         # Physiotherapy initiated", "Test for dysphagia screen"),
+        QI_splitlab_corr(input$selected_split_corr)
         if (input$selected_split_corr=="Gender") {
           QI_split_corr("gender")
         } else if (input$selected_split_corr=="mRS on discharge") {
@@ -576,7 +578,7 @@ plot_Expanded <- function(id, df) {
             geom_line(aes(group = 1,linetype = site_name), color="#D16A00", linetype="solid") +
             geom_point(color="#D16A00") +
             scale_color_discrete(labels=c("Your hospital"))+
-            theme_bw() 
+            theme_bw() + xlab("Year and quarter") + ylab(paste(QI_ylab(),QI_agg(), sep=" "))+ theme(legend.position = "none")
           if (QI_displayaspercentage()) {
             plot <- plot + geom_text(aes(label=scales::percent(round(.data[[QI_agg()]], digits = 4))), size=4, nudge_y = 2, color="black")
           } else {
@@ -673,15 +675,16 @@ plot_Expanded <- function(id, df) {
       QI_data_y_corr <- numVars %>% filter(QI == QI_name_y_corr(), site_name=="Samaritan", gender %in% QI_gender_corr(), imaging_done %in% QI_imaging_corr(), prenotification%in%QI_prenotification_corr(), discharge_mrs%in%QI_mrs_corr(),YQ%in%QI_filterquarts_corr(), Value%in%QI_filterminmax_y_corr()) %>% drop_na(Value) %>% 
         group_by(site_name, site_country) 
       
-      QI_data_corr <- merge(QI_data_x_corr, QI_data_y_corr, by = c("YQ", "site_name", "site_id", "subject_id","gender"))
+      QI_data_corr <- merge(QI_data_x_corr, QI_data_y_corr, by = c("YQ", "site_name", "site_id", "subject_id","gender", "discharge_mrs", "prenotification", "imaging_done","occup_physiotherapy_received", "dysphagia_screening_done"))
 
       
       if(!is.null(QI_split_corr()) && !is_empty(QI_split_corr()) && QI_split_corr()!="None"){
-        corrplot <- ggplot(data = QI_data_corr, aes(x = Value.x, y = Value.y, color=as.factor(.data[[QI_split_corr()]]))) + theme_bw() + 
-          geom_point() + xlab(QI_xlab_corr()) + ylab(QI_ylab_corr())
+        corrplot <- ggplot(data = QI_data_corr, aes(x = Value.x, y = Value.y, color=as.factor(.data[[QI_split_corr()]]), group=as.factor(.data[[QI_split_corr()]]))) + theme_bw() + 
+          geom_point() + xlab(QI_xlab_corr()) + ylab(QI_ylab_corr())+ 
+          scale_color_discrete(name = QI_splitlab_corr(), labels = c("Female", "Male"))
       } else {
         corrplot <- ggplot(data = QI_data_corr, aes(x = Value.x, y = Value.y)) + theme_bw() + 
-          geom_point(color="#D16A00") + xlab(QI_xlab_corr()) + ylab(QI_ylab_corr())
+          geom_point(color="#D16A00") + xlab(QI_xlab_corr()) + ylab(QI_ylab_corr()) 
         }
 
       if(QI_trend_corr()){
