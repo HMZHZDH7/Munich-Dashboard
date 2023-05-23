@@ -212,7 +212,7 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
              selectInput(
                inputId = ns("selected_split_corr"),
                label = h6("Select factor to colour data"),
-               choices = c("Gender", "mRS", "Prenotification", "Imaging done", "Physiotherapy initiated"),
+               choices = c("","Gender", "mRS on discharge", "3-month mRS", "Arrival pre-notified", "Imaging done", "Physiotherapy initiated", "Test for dysphagia screen"),
                selected = NULL),
              
              ),
@@ -282,7 +282,7 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
             selectInput(
               inputId = ns("selected_split_comp"),
               label = h6("Select factor to compare data"),
-              choices = c("Gender", "mRS", "Prenotification", "Imaging done", "Physiotherapy initiated"),
+              choices = c("","Gender", "mRS on discharge", "3-month mRS", "Arrival pre-notified", "Imaging done", "Physiotherapy initiated", "Test for dysphagia screen"),
               selected = "Gender"),
             ),
      
@@ -290,11 +290,11 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
 
             column(3,
                    h3("Filter by values"),     
-                   sliderInput(ns("slider_minmax_com"), label = h6("Filter values of y-axis variable (slider shows range of values in y-axis variable)"),
+                   sliderInput(ns("slider_minmax_comp"), label = h6("Filter values of y-axis variable (slider shows range of values in y-axis variable)"),
                                min = 0, max = 100, value = c(0, 100)),
                    
                    checkboxGroupInput(
-                     inputId = ns("selected_quarts_com"),
+                     inputId = ns("selected_quarts_comp"),
                      label = h6("Quarters shown in plot:"),
                      choices = c("2018 Q1", "2018 Q2", "2018 Q3", "2018 Q4",
                                  "2019 Q1", "2019 Q2", "2019 Q3", "2019 Q4",
@@ -445,11 +445,17 @@ plot_Expanded <- function(id, df) {
         index <- match(input$selected_colx_corr, df$INDICATOR)
         QI_col <- df$COLUMN[index]
         QI_name_x_corr(QI_col)
+        QI_filt <- numVars %>% filter(QI == QI_name_x_corr(), site_name=="Samaritan") %>% drop_na(Value)
+        updateSliderInput(session, "slider_minmax_x_corr", value = c(min(QI_filt$Value),max(QI_filt$Value)),
+                          min = min(QI_filt$Value), max = max(QI_filt$Value), step = 1)
       })
       observeEvent(input$selected_coly_corr,{
         index <- match(input$selected_coly_corr, df$INDICATOR)
         QI_col <- df$COLUMN[index]
         QI_name_y_corr(QI_col)
+        QI_filt <- numVars %>% filter(QI == QI_name_y_corr(), site_name=="Samaritan") %>% drop_na(Value)
+        updateSliderInput(session, "slider_minmax_y_corr", value = c(min(QI_filt$Value),max(QI_filt$Value)),
+                          min = min(QI_filt$Value), max = max(QI_filt$Value), step = 1)
       })
       observeEvent(input$selected_trendline_corr, {
         QI_trend_corr(input$selected_trendline_corr)
@@ -475,6 +481,72 @@ plot_Expanded <- function(id, df) {
       observeEvent(input$selected_mrs_corr, {
         QI_mrs_corr(input$selected_mrs_corr)
       }, ignoreNULL=FALSE)
+      observeEvent(input$slider_minmax_x_corr, {
+        QI_filterminmax_x_corr(input$slider_minmax_x_corr[1]:input$slider_minmax_x_corr[2])
+      })
+      observeEvent(input$slider_minmax_y_corr, {
+        QI_filterminmax_y_corr(input$slider_minmax_y_corr[1]:input$slider_minmax_y_corr[2])
+      })
+      observeEvent(input$selected_quarts_corr, {
+        QI_filterquarts_corr(input$selected_quarts_corr)
+      })
+      observeEvent(input$selected_split_corr, {
+        # Physiotherapy initiated", "Test for dysphagia screen"),
+        if (input$selected_split_corr=="Gender") {
+          QI_split_corr("gender")
+        } else if (input$selected_split_corr=="mRS on discharge") {
+          QI_split_corr("discharge_mRS")
+        } else if (input$selected_split_corr=="3-month mRS") {
+          QI_split_corr("three_m_mrs")
+        } else if (input$selected_split_corr=="Arrival pre-notified") {
+          QI_split_corr("prenotification")
+        } else if (input$selected_split_corr=="Imaging done") {
+          QI_split_corr("imaging_done")
+        } else if (input$selected_split_corr=="Physiotherapy initiated") {
+          QI_split_corr("occup_physiotherapy_received")
+        } else if (input$selected_split_corr=="Test for dysphagia screen") {
+          QI_split_corr("dysphagia_screening_done")
+        } else {
+          QI_split_corr("")
+        }
+      })
+      
+      
+      
+      observeEvent(input$selected_col_comp,{
+        index <- match(input$selected_col_comp, df$INDICATOR)
+        QI_col <- df$COLUMN[index]
+        QI_name_comp(QI_col)
+        QI_filt <- numVars %>% filter(QI == QI_name_comp(), site_name=="Samaritan") %>% drop_na(Value)
+        updateSliderInput(session, "slider_minmax_comp", value = c(min(QI_filt$Value),max(QI_filt$Value)),
+                          min = min(QI_filt$Value), max = max(QI_filt$Value), step = 1)
+      })
+      observeEvent(input$slider_minmax_comp, {
+        QI_filterminmax_comp(input$slider_minmax_comp[1]:input$slider_minmax_comp[2])
+      })
+      observeEvent(input$selected_quarts_comp, {
+        QI_filterquarts_comp(input$selected_quarts_comp)
+      })
+      observeEvent(input$selected_split_comp, {
+        # Physiotherapy initiated", "Test for dysphagia screen"),
+        if (input$selected_split_comp=="Gender") {
+          QI_split_comp("gender")
+        } else if (input$selected_split_comp=="mRS on discharge") {
+          QI_split_comp("discharge_mRS")
+        } else if (input$selected_split_comp=="3-month mRS") {
+          QI_split_comp("three_m_mrs")
+        } else if (input$selected_split_comp=="Arrival pre-notified") {
+          QI_split_comp("prenotification")
+        } else if (input$selected_split_comp=="Imaging done") {
+          QI_split_comp("imaging_done")
+        } else if (input$selected_split_comp=="Physiotherapy initiated") {
+          QI_split_comp("occup_physiotherapy_received")
+        } else if (input$selected_split_comp=="Test for dysphagia screen") {
+          QI_split_comp("dysphagia_screening_done")
+        } else {
+          QI_split_comp("")
+        }
+      })
       
       output$plot <- renderPlotly({
         if(!is.null(QI_name())) {
@@ -488,7 +560,7 @@ plot_Expanded <- function(id, df) {
           plot <- ggplot(QI_data, aes(x = YQ, y = .data[[QI_agg()]])) +
             geom_line(aes(group = 1,linetype = site_name), color="#D16A00", linetype="solid") +
             geom_point(color="#D16A00") +
-            geom_text(aes(label=.data[[QI_agg()]]), size=3, nudge_y = 2, color="black") +
+            geom_text(aes(label=.data[[QI_agg()]]), size=4, nudge_y = 2, color="black") +
             scale_color_discrete(labels=c("Your hospital"))+
             theme_bw() 
           
@@ -575,18 +647,23 @@ plot_Expanded <- function(id, df) {
       })
       
     output$corrPlot <- renderPlotly({
-      QI_data_x_corr <- numVars %>% filter(QI == QI_name_x_corr(), site_name=="Samaritan", gender %in% QI_gender_corr(), imaging_done %in% QI_imaging_corr(), prenotification%in%QI_prenotification_corr(), discharge_mrs%in%QI_mrs_corr()) %>% drop_na(Value) %>% 
+      QI_data_x_corr <- numVars %>% filter(QI == QI_name_x_corr(), site_name=="Samaritan", gender %in% QI_gender_corr(), imaging_done %in% QI_imaging_corr(), prenotification%in%QI_prenotification_corr(), discharge_mrs%in%QI_mrs_corr(),YQ%in%QI_filterquarts_corr(), Value%in%QI_filterminmax_x_corr()) %>% drop_na(Value) %>% 
         group_by(site_name, site_country) 
       
-      QI_data_y_corr <- numVars %>% filter(QI == QI_name_y_corr(), site_name=="Samaritan", gender %in% QI_gender_corr(), imaging_done %in% QI_imaging_corr(), prenotification%in%QI_prenotification_corr(), discharge_mrs%in%QI_mrs_corr()) %>% drop_na(Value) %>% 
+      QI_data_y_corr <- numVars %>% filter(QI == QI_name_y_corr(), site_name=="Samaritan", gender %in% QI_gender_corr(), imaging_done %in% QI_imaging_corr(), prenotification%in%QI_prenotification_corr(), discharge_mrs%in%QI_mrs_corr(),YQ%in%QI_filterquarts_corr(), Value%in%QI_filterminmax_y_corr()) %>% drop_na(Value) %>% 
         group_by(site_name, site_country) 
       
-      QI_data_corr <- merge(QI_data_x_corr, QI_data_y_corr, by = c("YQ", "site_name", "site_id", "subject_id"))
+      QI_data_corr <- merge(QI_data_x_corr, QI_data_y_corr, by = c("YQ", "site_name", "site_id", "subject_id","gender"))
 
-      corrplot <- ggplot(data = QI_data_corr, aes(x = Value.x, y = Value.y)) +
-        geom_point(color="#D16A00") + 
-        theme_bw()
       
+      if(!is.null(QI_split_corr()) && !is_empty(QI_split_corr()) && QI_split_corr()!=""){
+        corrplot <- ggplot(data = QI_data_corr, aes(x = Value.x, y = Value.y, color=as.factor(.data[[QI_split_corr()]]))) + theme_bw() + 
+          geom_point()
+      } else {
+        corrplot <- ggplot(data = QI_data_corr, aes(x = Value.x, y = Value.y)) + theme_bw() + 
+          geom_point(color="#D16A00") 
+        }
+
       if(QI_trend_corr()){
         corrplot <- corrplot + geom_smooth(method="lm", se=F)
       }
@@ -595,10 +672,10 @@ plot_Expanded <- function(id, df) {
     })
     
     output$compPlot <- renderPlotly({
-      QI_data_comp <- numVars %>% filter(QI == QI_name(), site_name=="Samaritan") %>% drop_na(Value) %>% 
+      QI_data_comp <- numVars %>% filter(QI == QI_name_comp(), site_name=="Samaritan",YQ%in%QI_filterquarts_comp(), Value%in%QI_filterminmax_comp()) %>% drop_na(Value) %>% 
         group_by(site_name, site_country) 
       
-      corrplot <- ggplot(data = QI_data_comp, aes(x = as.factor(gender), y = Value, color=as.factor(gender))) +
+      compPlot <- ggplot(data = QI_data_comp, aes(x = as.factor(.data[[QI_split_comp()]]), y = Value, color=as.factor(.data[[QI_split_comp()]]))) +
         geom_boxplot(notch = TRUE) + 
         theme_bw() + theme(legend.position = "none", axis.title.x = element_blank())+ 
         scale_x_discrete(labels=c("0" = "Female", "1" = "Male"))
