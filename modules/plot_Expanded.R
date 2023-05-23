@@ -129,7 +129,7 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
              selectInput(
                inputId = ns("selected_comparisons_dist"),
                label = h6("Compare with hospitals"),
-               choices = c("", "Paradise", "Angelvale", "Rose", "General", "Mercy", "Hope"),
+               choices = c("None", "Paradise", "Angelvale", "Rose", "General", "Mercy", "Hope"),
                selected = NULL)  
       ),
       column(3, 
@@ -212,7 +212,7 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
              selectInput(
                inputId = ns("selected_split_corr"),
                label = h6("Select factor to colour data"),
-               choices = c("","Gender", "mRS on discharge", "3-month mRS", "Arrival pre-notified", "Imaging done", "Physiotherapy initiated", "Test for dysphagia screen"),
+               choices = c("None","Gender", "mRS on discharge", "3-month mRS", "Arrival pre-notified", "Imaging done", "Physiotherapy initiated", "Test for dysphagia screen"),
                selected = NULL),
              
              ),
@@ -282,7 +282,7 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
             selectInput(
               inputId = ns("selected_split_comp"),
               label = h6("Select factor to compare data"),
-              choices = c("","Gender", "mRS on discharge", "3-month mRS", "Arrival pre-notified", "Imaging done", "Physiotherapy initiated", "Test for dysphagia screen"),
+              choices = c("None","Gender", "mRS on discharge", "3-month mRS", "Arrival pre-notified", "Imaging done", "Physiotherapy initiated", "Test for dysphagia screen"),
               selected = "Gender"),
             ),
      
@@ -327,6 +327,10 @@ plot_Expanded <- function(id, df) {
         index <- match(input$selected_col, df$INDICATOR)
         QI_col <- df$COLUMN[index]
         QI_name(QI_col)
+        if (df$PERCENTAGE[index]==1) {
+          QI_displayaspercentage(TRUE)
+          updateSelectInput(session, "selected_colx", selected = "mean")
+        } else {QI_displayaspercentage(FALSE)}
         QI_filt <- numVars %>% filter(QI == QI_name(), site_name=="Samaritan") %>% drop_na(Value)
         
         updateSliderInput(session, "slider_minmax", value = c(min(QI_filt$Value),max(QI_filt$Value)),
@@ -389,6 +393,7 @@ plot_Expanded <- function(id, df) {
       
       
       observeEvent(input$selected_col_dist,{
+        QI_xlab_dist(input$selected_col_dist)
         index <- match(input$selected_col_dist, df$INDICATOR)
         QI_col <- df$COLUMN[index]
         QI_name_dist(QI_col)
@@ -495,7 +500,7 @@ plot_Expanded <- function(id, df) {
         if (input$selected_split_corr=="Gender") {
           QI_split_corr("gender")
         } else if (input$selected_split_corr=="mRS on discharge") {
-          QI_split_corr("discharge_mRS")
+          QI_split_corr("discharge_mrs")
         } else if (input$selected_split_corr=="3-month mRS") {
           QI_split_corr("three_m_mrs")
         } else if (input$selected_split_corr=="Arrival pre-notified") {
@@ -507,7 +512,7 @@ plot_Expanded <- function(id, df) {
         } else if (input$selected_split_corr=="Test for dysphagia screen") {
           QI_split_corr("dysphagia_screening_done")
         } else {
-          QI_split_corr("")
+          QI_split_corr("None")
         }
       })
       
@@ -532,7 +537,7 @@ plot_Expanded <- function(id, df) {
         if (input$selected_split_comp=="Gender") {
           QI_split_comp("gender")
         } else if (input$selected_split_comp=="mRS on discharge") {
-          QI_split_comp("discharge_mRS")
+          QI_split_comp("discharge_mrs")
         } else if (input$selected_split_comp=="3-month mRS") {
           QI_split_comp("three_m_mrs")
         } else if (input$selected_split_comp=="Arrival pre-notified") {
@@ -544,7 +549,7 @@ plot_Expanded <- function(id, df) {
         } else if (input$selected_split_comp=="Test for dysphagia screen") {
           QI_split_comp("dysphagia_screening_done")
         } else {
-          QI_split_comp("")
+          QI_split_comp("None")
         }
       })
       
@@ -560,9 +565,14 @@ plot_Expanded <- function(id, df) {
           plot <- ggplot(QI_data, aes(x = YQ, y = .data[[QI_agg()]])) +
             geom_line(aes(group = 1,linetype = site_name), color="#D16A00", linetype="solid") +
             geom_point(color="#D16A00") +
-            geom_text(aes(label=.data[[QI_agg()]]), size=4, nudge_y = 2, color="black") +
             scale_color_discrete(labels=c("Your hospital"))+
             theme_bw() 
+          if (QI_displayaspercentage()) {
+            plot <- plot + geom_text(aes(label=scales::percent(round(.data[[QI_agg()]], digits = 4))), size=4, nudge_y = 2, color="black")
+          } else {
+            plot <- plot + geom_text(aes(label=round(.data[[QI_agg()]], digits = 1)), size=4, nudge_y = 2, color="black")
+            
+          }
           
           if(QI_trend()){
             plot <- plot + geom_smooth(method="lm")
@@ -613,7 +623,7 @@ plot_Expanded <- function(id, df) {
         distPlot <- ggplot(QI_data_dist, aes(x = Value)) +
           geom_density(aes(group = 1), color="#D16A00", linetype="solid") +
           scale_color_discrete(labels=c("Your hospital"))+
-          theme_bw()
+          theme_bw() + xlab(QI_xlab_dist())#scale_x_discrete(name =QI_xlab_dist())
         
         if(QI_mean_dist()){
           distPlot <- distPlot + geom_vline(xintercept = mean(QI_data_dist$Value), size=1.5, color="red",linetype=3)
@@ -633,7 +643,7 @@ plot_Expanded <- function(id, df) {
             geom_density(data=compare_nat_data_dist, aes(group = 1), color="#56B4E9",alpha = 0.5, linetype="solid")
         }
         
-        if(!is.null(compared_hospitals_dist()) && !is_empty(compared_hospitals_dist()) && compared_hospitals_dist()!=""){
+        if(!is.null(compared_hospitals_dist()) && !is_empty(compared_hospitals_dist()) && compared_hospitals_dist()!="None"){
           compare_data_dist <- numVars %>% filter(QI == QI_name(), site_name==compared_hospitals_dist(), gender %in% QI_gender_dist(), imaging_done %in% QI_imaging_dist(), prenotification%in%QI_prenotification_dist(), discharge_mrs%in%QI_mrs_dist(),YQ%in%QI_filterquarts_dist(), Value%in%QI_filterminmax_dist()) %>% 
             drop_na(Value) %>%  group_by(site_name)
           
@@ -656,7 +666,7 @@ plot_Expanded <- function(id, df) {
       QI_data_corr <- merge(QI_data_x_corr, QI_data_y_corr, by = c("YQ", "site_name", "site_id", "subject_id","gender"))
 
       
-      if(!is.null(QI_split_corr()) && !is_empty(QI_split_corr()) && QI_split_corr()!=""){
+      if(!is.null(QI_split_corr()) && !is_empty(QI_split_corr()) && QI_split_corr()!="None"){
         corrplot <- ggplot(data = QI_data_corr, aes(x = Value.x, y = Value.y, color=as.factor(.data[[QI_split_corr()]]))) + theme_bw() + 
           geom_point()
       } else {
