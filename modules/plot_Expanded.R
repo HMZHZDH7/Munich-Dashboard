@@ -99,6 +99,7 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
         plotlyOutput(
           outputId = ns("plot")
         ),
+        DTOutput(ns("dataPlot"))
       )
     )
   )
@@ -194,6 +195,7 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
         plotlyOutput(
           outputId = ns("distPlot")
         ),
+        DTOutput(ns("dataDistPlot"))
       )
     )
   )
@@ -292,6 +294,7 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
         plotlyOutput(
           outputId = ns("corrPlot")
         ),
+        DTOutput(ns("dataCorrPlot"))
       )
     )
   )
@@ -346,6 +349,7 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
         plotlyOutput(
           outputId = ns("compPlot")
         ),
+        DTOutput(ns("dataCompPlot"))
       )
     )
   )
@@ -854,6 +858,54 @@ plot_Expanded <- function(id, df) {
           theme(legend.position = "none", axis.title.x = element_blank()) +
           scale_x_discrete(labels = QI_xlab_comp()) +
           ylab(QI_ylab_comp())
+      })
+
+      output$dataPlot <- DT::renderDataTable({
+        QI_data_comp <- numVars %>%
+          filter(QI == QI_name(), site_name == "Samaritan", gender %in% QI_gender(), imaging_done %in% QI_imaging(), prenotification %in% QI_prenotification(), discharge_mrs %in% QI_mrs(), YQ %in% QI_filterquarts(), Value %in% QI_filterminmax()) %>%
+          drop_na(Value) %>%
+          group_by(YQ, site_name, site_country) %>%
+          mutate(
+            median = median(Value), sd = sd(Value), min = min(Value),
+            max = max(Value), mean = mean(Value), .groups = "drop"
+          ) %>%
+          ungroup()
+
+        return(DT::datatable(QI_data_comp, options = list(pageLength = 10, scrollX = TRUE)))
+      })
+
+      output$dataDistPlot <- DT::renderDataTable({
+        QI_data_dist <- numVars %>%
+          filter(QI == QI_name_dist(), site_name == "Samaritan", gender %in% QI_gender_dist(), imaging_done %in% QI_imaging_dist(), prenotification %in% QI_prenotification_dist(), discharge_mrs %in% QI_mrs_dist(), YQ %in% QI_filterquarts_dist(), Value %in% QI_filterminmax_dist()) %>%
+          drop_na(Value) %>%
+          group_by(site_name, site_country)
+
+        return(DT::datatable(QI_data_dist, options = list(pageLength = 10, scrollX = TRUE)))
+      })
+
+      output$dataCorrPlot <- DT::renderDataTable({
+        QI_data_x_corr <- numVars %>%
+          filter(QI == QI_name_x_corr(), site_name == "Samaritan", gender %in% QI_gender_corr(), imaging_done %in% QI_imaging_corr(), prenotification %in% QI_prenotification_corr(), discharge_mrs %in% QI_mrs_corr(), YQ %in% QI_filterquarts_corr(), Value %in% QI_filterminmax_x_corr()) %>%
+          drop_na(Value) %>%
+          group_by(site_name, site_country)
+
+        QI_data_y_corr <- numVars %>%
+          filter(QI == QI_name_y_corr(), site_name == "Samaritan", gender %in% QI_gender_corr(), imaging_done %in% QI_imaging_corr(), prenotification %in% QI_prenotification_corr(), discharge_mrs %in% QI_mrs_corr(), YQ %in% QI_filterquarts_corr(), Value %in% QI_filterminmax_y_corr()) %>%
+          drop_na(Value) %>%
+          group_by(site_name, site_country)
+
+        QI_data_corr <- merge(QI_data_x_corr, QI_data_y_corr, by = c("YQ", "site_name", "site_id", "subject_id", "gender", "discharge_mrs", "prenotification", "three_m_mrs", "imaging_done", "occup_physiotherapy_received", "dysphagia_screening_done"))
+
+        return(DT::datatable(QI_data_corr, options = list(pageLength = 10, scrollX = TRUE)))
+      })
+
+      output$dataCompPlot <- DT::renderDataTable({
+        QI_data_comp <- numVars %>%
+          filter(QI == QI_name_comp(), site_name == "Samaritan", YQ %in% QI_filterquarts_comp(), Value %in% QI_filterminmax_comp()) %>%
+          drop_na(Value) %>%
+          group_by(site_name, site_country)
+
+        return(DT::datatable(QI_data_comp, options = list(pageLength = 10, scrollX = TRUE)))
       })
     }
   )
