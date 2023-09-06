@@ -8,7 +8,7 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
         # Define a row containing dropdown menus to select variables & tickboxes for more plot options.
         fixedRow(
           column(
-            3,
+            6,
             h3("Plot characteristics"),
             selectInput(
               inputId = ns("selected_col"),
@@ -28,7 +28,7 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
             checkboxInput(inputId = ns("selected_error"), "Show error bar", value = FALSE),
           ),
           column(
-            3,
+            6,
             h3("Compare"),
             h6("Compare with counry"),
             checkboxInput(inputId = ns("selected_natcomparisons"), "Show national value", value = FALSE),
@@ -39,8 +39,10 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
               selected = NULL
             )
           ),
+        ),
+        fixedRow(
           column(
-            3,
+            6,
             h3("Filter by subgroups"),
             checkboxGroupInput(
               inputId = ns("selected_genders"),
@@ -68,7 +70,7 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
             )
           ),
           column(
-            3,
+            6,
             h3("Filter by values"),
             sliderInput(ns("slider_minmax"),
               label = h6("Filter values of y-axis variable (slider shows range of values in y-axis variable)"),
@@ -93,7 +95,7 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
               )
             ),
           ),
-        ),
+        )
       ),
       mainPanel(
         plotlyOutput(
@@ -110,7 +112,7 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
       sidebarPanel(
         fixedRow(
           column(
-            3,
+            6,
             h3("Plot characteristics"),
             selectInput(
               inputId = ns("selected_col_dist"),
@@ -124,7 +126,7 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
             checkboxInput(inputId = ns("selected_median_dist"), "Show median line", value = FALSE),
           ),
           column(
-            3,
+            6,
             h3("Compare"),
             h6("Compare with counry"),
             checkboxInput(inputId = ns("selected_natcomparisons_dist"), "Show national value", value = FALSE),
@@ -135,8 +137,10 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
               selected = NULL
             )
           ),
+        ),
+        fixedRow(
           column(
-            3,
+            6,
             h3("Filter by subgroups"),
             checkboxGroupInput(
               inputId = ns("selected_genders_dist"),
@@ -164,7 +168,7 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
             )
           ),
           column(
-            3,
+            6,
             h3("Filter by values"),
             sliderInput(ns("slider_minmax_dist"),
               label = h6("Filter values of x-axis variable (slider shows range of values in x-axis variable)"),
@@ -202,94 +206,98 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
 
   corr_UI <- tagList(
     sidebarLayout(
-      sidebarPanel(fixedRow(
-        column(
-          3,
-          h3("Plot characteristics"),
-          selectInput(
-            inputId = ns("selected_colx_corr"),
-            label = h6("Select x-axis variable"),
-            choices = database,
-            selected = "Door-to-imaging time"
-          ),
-          selectInput(
-            inputId = ns("selected_coly_corr"),
-            label = h6("Select y-axis variable"),
-            choices = database,
-            selected = "Modified ranking scale discharge"
-          ),
-          h6("Show trend line"),
-          checkboxInput(inputId = ns("selected_trendline_corr"), "Show trend line", value = FALSE),
-        ),
-        column(
-          3,
-          h3("Split by subgroups"),
-          selectInput(
-            inputId = ns("selected_split_corr"),
-            label = h6("Select factor to colour data"),
-            choices = c("None", "Gender", "mRS on discharge", "3-month mRS", "Arrival pre-notified", "Imaging done", "Physiotherapy initiated", "Test for dysphagia screen"),
-            selected = NULL
-          ),
-        ),
-        column(
-          3,
-          h3("Filter by subgroups"),
-          checkboxGroupInput(
-            inputId = ns("selected_genders_corr"),
-            label = h6("Genders shown in plot:"),
-            choices = c("Female", "Male"),
-            selected = c("Female", "Male")
-          ),
-          checkboxGroupInput(
-            inputId = ns("selected_imagingdone_corr"),
-            label = h6("Imaging of patients shown in plot"),
-            choices = c("Done", "Not done"),
-            selected = c("Done", "Not done")
-          ),
-          checkboxGroupInput(
-            inputId = ns("selected_prenotification_corr"),
-            label = h6("Prenotification of patients in plot"),
-            choices = c("Prenotified", "Not prenotified"),
-            selected = c("Prenotified", "Not prenotified")
-          ),
-          checkboxGroupInput(
-            inputId = ns("selected_mrs_corr"),
-            label = h6("mRS of patients in plot"),
-            choices = c(0:6),
-            selected = c(0:6)
-          )
-        ),
-        column(
-          3,
-          h3("Filter by values"),
-          sliderInput(ns("slider_minmax_x_corr"),
-            label = h6("Filter values of x-axis variable (slider shows range of values in x-axis variable)"),
-            min = 0, max = 100, value = c(0, 100)
-          ),
-          sliderInput(ns("slider_minmax_y_corr"),
-            label = h6("Filter values of y-axis variable (slider shows range of values in y-axis variable)"),
-            min = 0, max = 100, value = c(0, 100)
-          ),
-          checkboxGroupInput(
-            inputId = ns("selected_quarts_corr"),
-            label = h6("Quarters shown in plot:"),
-            choices = c(
-              "2018 Q1", "2018 Q2", "2018 Q3", "2018 Q4",
-              "2019 Q1", "2019 Q2", "2019 Q3", "2019 Q4",
-              "2020 Q1", "2020 Q2", "2020 Q3", "2020 Q4",
-              "2021 Q1", "2021 Q2", "2021 Q3", "2021 Q4",
-              "2022 Q1", "2022 Q2", "2022 Q3", "2022 Q4"
+      sidebarPanel(
+        fixedRow(
+          column(
+            6,
+            h3("Plot characteristics"),
+            selectInput(
+              inputId = ns("selected_colx_corr"),
+              label = h6("Select x-axis variable"),
+              choices = database,
+              selected = "Door-to-imaging time"
             ),
-            selected = c(
-              "2018 Q1", "2018 Q2", "2018 Q3", "2018 Q4",
-              "2019 Q1", "2019 Q2", "2019 Q3", "2019 Q4",
-              "2020 Q1", "2020 Q2", "2020 Q3", "2020 Q4",
-              "2021 Q1", "2021 Q2", "2021 Q3", "2021 Q4",
-              "2022 Q1", "2022 Q2", "2022 Q3", "2022 Q4"
+            selectInput(
+              inputId = ns("selected_coly_corr"),
+              label = h6("Select y-axis variable"),
+              choices = database,
+              selected = "Modified ranking scale discharge"
+            ),
+            h6("Show trend line"),
+            checkboxInput(inputId = ns("selected_trendline_corr"), "Show trend line", value = FALSE),
+          ),
+          column(
+            6,
+            h3("Split by subgroups"),
+            selectInput(
+              inputId = ns("selected_split_corr"),
+              label = h6("Select factor to colour data"),
+              choices = c("None", "Gender", "mRS on discharge", "3-month mRS", "Arrival pre-notified", "Imaging done", "Physiotherapy initiated", "Test for dysphagia screen"),
+              selected = NULL
+            ),
+          ),
+        ),
+        fixedRow(
+          column(
+            6,
+            h3("Filter by subgroups"),
+            checkboxGroupInput(
+              inputId = ns("selected_genders_corr"),
+              label = h6("Genders shown in plot:"),
+              choices = c("Female", "Male"),
+              selected = c("Female", "Male")
+            ),
+            checkboxGroupInput(
+              inputId = ns("selected_imagingdone_corr"),
+              label = h6("Imaging of patients shown in plot"),
+              choices = c("Done", "Not done"),
+              selected = c("Done", "Not done")
+            ),
+            checkboxGroupInput(
+              inputId = ns("selected_prenotification_corr"),
+              label = h6("Prenotification of patients in plot"),
+              choices = c("Prenotified", "Not prenotified"),
+              selected = c("Prenotified", "Not prenotified")
+            ),
+            checkboxGroupInput(
+              inputId = ns("selected_mrs_corr"),
+              label = h6("mRS of patients in plot"),
+              choices = c(0:6),
+              selected = c(0:6)
             )
           ),
-        ),
-      )),
+          column(
+            6,
+            h3("Filter by values"),
+            sliderInput(ns("slider_minmax_x_corr"),
+              label = h6("Filter values of x-axis variable (slider shows range of values in x-axis variable)"),
+              min = 0, max = 100, value = c(0, 100)
+            ),
+            sliderInput(ns("slider_minmax_y_corr"),
+              label = h6("Filter values of y-axis variable (slider shows range of values in y-axis variable)"),
+              min = 0, max = 100, value = c(0, 100)
+            ),
+            checkboxGroupInput(
+              inputId = ns("selected_quarts_corr"),
+              label = h6("Quarters shown in plot:"),
+              choices = c(
+                "2018 Q1", "2018 Q2", "2018 Q3", "2018 Q4",
+                "2019 Q1", "2019 Q2", "2019 Q3", "2019 Q4",
+                "2020 Q1", "2020 Q2", "2020 Q3", "2020 Q4",
+                "2021 Q1", "2021 Q2", "2021 Q3", "2021 Q4",
+                "2022 Q1", "2022 Q2", "2022 Q3", "2022 Q4"
+              ),
+              selected = c(
+                "2018 Q1", "2018 Q2", "2018 Q3", "2018 Q4",
+                "2019 Q1", "2019 Q2", "2019 Q3", "2019 Q4",
+                "2020 Q1", "2020 Q2", "2020 Q3", "2020 Q4",
+                "2021 Q1", "2021 Q2", "2021 Q3", "2021 Q4",
+                "2022 Q1", "2022 Q2", "2022 Q3", "2022 Q4"
+              )
+            ),
+          ),
+        )
+      ),
       mainPanel(
         plotlyOutput(
           outputId = ns("corrPlot")
@@ -303,7 +311,7 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
     sidebarLayout(
       sidebarPanel(fixedRow(
         column(
-          3,
+          6,
           h3("Plot characteristics"),
           selectInput(
             inputId = ns("selected_col_comp"),
@@ -319,7 +327,7 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
           ),
         ),
         column(
-          3,
+          6,
           h3("Filter by values"),
           sliderInput(ns("slider_minmax_comp"),
             label = h6("Filter values of y-axis variable (slider shows range of values in y-axis variable)"),
