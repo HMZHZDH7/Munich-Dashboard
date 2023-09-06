@@ -3,13 +3,9 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
   
   #Storing the plot under this variable
   plot_UI <- tagList(
-    plotlyOutput(
-      outputId = ns("plot")
-    ),
-    
-    
-    
-    #Define a row containing dropdown menus to select variables & tickboxes for more plot options.
+    sidebarLayout(
+      sidebarPanel(
+        #Define a row containing dropdown menus to select variables & tickboxes for more plot options.
     fixedRow(
       column(3,
              h3("Plot characteristics"),     
@@ -93,6 +89,17 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
       
            
     ),
+      ),
+      mainPanel(
+        plotlyOutput(
+          outputId = ns("plot")
+        ),
+      )
+    )
+    
+    
+    
+    
     
     
     
@@ -101,11 +108,9 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
   
   #Storing the datatable output under this variable
   dist_UI <- tagList(
-    plotlyOutput(
-      outputId = ns("distPlot")
-    ),
-    
-    fixedRow(
+    sidebarLayout(
+      sidebarPanel(
+        fixedRow(
       column(3,
              h3("Plot characteristics"),     
              selectInput(
@@ -181,14 +186,20 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
       
       
       )  
+      ),
+      mainPanel(
+           plotlyOutput(
+      outputId = ns("distPlot")
+    ),
+      )
+    )
+    
+    
     )
   
   corr_UI <- tagList(
-    plotlyOutput(
-      outputId = ns("corrPlot")
-    ),
-    
-    fixedRow(
+    sidebarLayout(
+      sidebarPanel( fixedRow(
       column(3,
              h3("Plot characteristics"),     
              selectInput(
@@ -264,13 +275,19 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
                             "2020 Q1", "2020 Q2", "2020 Q3", "2020 Q4",
                             "2021 Q1", "2021 Q2", "2021 Q3", "2021 Q4",
                             "2022 Q1", "2022 Q2", "2022 Q3", "2022 Q4")), 
-      ), ) )
+      ), ) ),
+      mainPanel(
+        plotlyOutput(
+          outputId = ns("corrPlot")
+        ),
+      )
+    )
+    
+   )
   
   comp_UI <- tagList(
-    plotlyOutput(
-      outputId = ns("compPlot")
-    ),
-    fixedRow(
+    sidebarLayout(
+      sidebarPanel(fixedRow(
      column(3,
             h3("Plot characteristics"),     
             selectInput(
@@ -307,7 +324,16 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
                                   "2021 Q1", "2021 Q2", "2021 Q3", "2021 Q4",
                                   "2022 Q1", "2022 Q2", "2022 Q3", "2022 Q4")), 
             ),
-    ))
+    )),
+      mainPanel(
+            plotlyOutput(
+      outputId = ns("compPlot")
+    ),
+      )
+
+    )
+
+    )
   
   #Here we select to output the plot and table under a tabsetPanel format, where the user can choose to look at either the plot or the underlying datatable
   tabsetPanel(
