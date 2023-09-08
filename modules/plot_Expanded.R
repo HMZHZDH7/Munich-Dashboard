@@ -1,4 +1,7 @@
-plot_Expanded_UI <- function(id, database, hospitals, quarts) {
+source("modules/subgroup_Filter.R")
+source("modules/filterbyvalue_Filter.R")
+source("modules/compare_Filter.R")
+plot_Expanded_UI <- function(id, database, hospitals) {
   ns <- NS(id)
 
   # Storing the plot under this variable
@@ -12,7 +15,7 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
             h3("Plot characteristics"),
             selectInput(
               inputId = ns("selected_col"),
-              label = h6("Select y-axis variable"),
+              label = h6("Select x-axis variable"),
               choices = database,
               selected = "Door-to-imaging time"
             ),
@@ -27,74 +30,11 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
             h6("Show error bars"),
             checkboxInput(inputId = ns("selected_error"), "Show error bar", value = FALSE),
           ),
-          column(
-            6,
-            h3("Compare"),
-            h6("Compare with counry"),
-            checkboxInput(inputId = ns("selected_natcomparisons"), "Show national value", value = FALSE),
-            checkboxGroupInput(
-              inputId = ns("selected_comparisons"),
-              label = h6("Compare with hospitals"),
-              choices = hospitals,
-              selected = NULL
-            )
-          ),
+          createCompareUI(id),
         ),
         fixedRow(
-          column(
-            6,
-            h3("Filter by subgroups"),
-            checkboxGroupInput(
-              inputId = ns("selected_genders"),
-              label = h6("Genders shown in plot:"),
-              choices = c("Female", "Male"),
-              selected = c("Female", "Male")
-            ),
-            checkboxGroupInput(
-              inputId = ns("selected_imagingdone"),
-              label = h6("Imaging of patients shown in plot"),
-              choices = c("Done", "Not done"),
-              selected = c("Done", "Not done")
-            ),
-            checkboxGroupInput(
-              inputId = ns("selected_prenotification"),
-              label = h6("Prenotification of patients in plot"),
-              choices = c("Prenotified", "Not prenotified"),
-              selected = c("Prenotified", "Not prenotified")
-            ),
-            checkboxGroupInput(
-              inputId = ns("selected_mrs"),
-              label = h6("mRS of patients in plot"),
-              choices = c(0:6),
-              selected = c(0:6)
-            )
-          ),
-          column(
-            6,
-            h3("Filter by values"),
-            sliderInput(ns("slider_minmax"),
-              label = h6("Filter values of y-axis variable (slider shows range of values in y-axis variable)"),
-              min = 0, max = 100, value = c(0, 100)
-            ),
-            checkboxGroupInput(
-              inputId = ns("selected_quarts"),
-              label = h6("Quarters shown in plot:"),
-              choices = c(
-                "2018 Q1", "2018 Q2", "2018 Q3", "2018 Q4",
-                "2019 Q1", "2019 Q2", "2019 Q3", "2019 Q4",
-                "2020 Q1", "2020 Q2", "2020 Q3", "2020 Q4",
-                "2021 Q1", "2021 Q2", "2021 Q3", "2021 Q4",
-                "2022 Q1", "2022 Q2", "2022 Q3", "2022 Q4"
-              ),
-              selected = c(
-                "2018 Q1", "2018 Q2", "2018 Q3", "2018 Q4",
-                "2019 Q1", "2019 Q2", "2019 Q3", "2019 Q4",
-                "2020 Q1", "2020 Q2", "2020 Q3", "2020 Q4",
-                "2021 Q1", "2021 Q2", "2021 Q3", "2021 Q4",
-                "2022 Q1", "2022 Q2", "2022 Q3", "2022 Q4"
-              )
-            ),
-          ),
+          createSubgroupFilterUI(id),
+          createFilterbyvalueUI(id)
         )
       ),
       mainPanel(
@@ -116,7 +56,7 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
             h3("Plot characteristics"),
             selectInput(
               inputId = ns("selected_col_dist"),
-              label = h6("Select y-axis variable"),
+              label = h6("Select x-axis variable"),
               choices = database,
               selected = "Door-to-imaging time"
             ),
@@ -125,74 +65,11 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
             h6("Show median"),
             checkboxInput(inputId = ns("selected_median_dist"), "Show median line", value = FALSE),
           ),
-          column(
-            6,
-            h3("Compare"),
-            h6("Compare with counry"),
-            checkboxInput(inputId = ns("selected_natcomparisons_dist"), "Show national value", value = FALSE),
-            selectInput(
-              inputId = ns("selected_comparisons_dist"),
-              label = h6("Compare with hospitals"),
-              choices = c("None", "Paradise", "Angelvale", "Rose", "General", "Mercy", "Hope"),
-              selected = NULL
-            )
-          ),
+          createCompareUI(id, "_dist"),
         ),
         fixedRow(
-          column(
-            6,
-            h3("Filter by subgroups"),
-            checkboxGroupInput(
-              inputId = ns("selected_genders_dist"),
-              label = h6("Genders shown in plot:"),
-              choices = c("Female", "Male"),
-              selected = c("Female", "Male")
-            ),
-            checkboxGroupInput(
-              inputId = ns("selected_imagingdone_dist"),
-              label = h6("Imaging of patients shown in plot"),
-              choices = c("Done", "Not done"),
-              selected = c("Done", "Not done")
-            ),
-            checkboxGroupInput(
-              inputId = ns("selected_prenotification_dist"),
-              label = h6("Prenotification of patients in plot"),
-              choices = c("Prenotified", "Not prenotified"),
-              selected = c("Prenotified", "Not prenotified")
-            ),
-            checkboxGroupInput(
-              inputId = ns("selected_mrs_dist"),
-              label = h6("mRS of patients in plot"),
-              choices = c(0:6),
-              selected = c(0:6)
-            )
-          ),
-          column(
-            6,
-            h3("Filter by values"),
-            sliderInput(ns("slider_minmax_dist"),
-              label = h6("Filter values of x-axis variable (slider shows range of values in x-axis variable)"),
-              min = 0, max = 100, value = c(0, 100)
-            ),
-            checkboxGroupInput(
-              inputId = ns("selected_quarts_dist"),
-              label = h6("Quarters shown in plot:"),
-              choices = c(
-                "2018 Q1", "2018 Q2", "2018 Q3", "2018 Q4",
-                "2019 Q1", "2019 Q2", "2019 Q3", "2019 Q4",
-                "2020 Q1", "2020 Q2", "2020 Q3", "2020 Q4",
-                "2021 Q1", "2021 Q2", "2021 Q3", "2021 Q4",
-                "2022 Q1", "2022 Q2", "2022 Q3", "2022 Q4"
-              ),
-              selected = c(
-                "2018 Q1", "2018 Q2", "2018 Q3", "2018 Q4",
-                "2019 Q1", "2019 Q2", "2019 Q3", "2019 Q4",
-                "2020 Q1", "2020 Q2", "2020 Q3", "2020 Q4",
-                "2021 Q1", "2021 Q2", "2021 Q3", "2021 Q4",
-                "2022 Q1", "2022 Q2", "2022 Q3", "2022 Q4"
-              )
-            ),
-          ),
+          createSubgroupFilterUI(id, "_dist"),
+          createFilterbyvalueUI(id, "_dist")
         )
       ),
       mainPanel(
@@ -238,64 +115,8 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
           ),
         ),
         fixedRow(
-          column(
-            6,
-            h3("Filter by subgroups"),
-            checkboxGroupInput(
-              inputId = ns("selected_genders_corr"),
-              label = h6("Genders shown in plot:"),
-              choices = c("Female", "Male"),
-              selected = c("Female", "Male")
-            ),
-            checkboxGroupInput(
-              inputId = ns("selected_imagingdone_corr"),
-              label = h6("Imaging of patients shown in plot"),
-              choices = c("Done", "Not done"),
-              selected = c("Done", "Not done")
-            ),
-            checkboxGroupInput(
-              inputId = ns("selected_prenotification_corr"),
-              label = h6("Prenotification of patients in plot"),
-              choices = c("Prenotified", "Not prenotified"),
-              selected = c("Prenotified", "Not prenotified")
-            ),
-            checkboxGroupInput(
-              inputId = ns("selected_mrs_corr"),
-              label = h6("mRS of patients in plot"),
-              choices = c(0:6),
-              selected = c(0:6)
-            )
-          ),
-          column(
-            6,
-            h3("Filter by values"),
-            sliderInput(ns("slider_minmax_x_corr"),
-              label = h6("Filter values of x-axis variable (slider shows range of values in x-axis variable)"),
-              min = 0, max = 100, value = c(0, 100)
-            ),
-            sliderInput(ns("slider_minmax_y_corr"),
-              label = h6("Filter values of y-axis variable (slider shows range of values in y-axis variable)"),
-              min = 0, max = 100, value = c(0, 100)
-            ),
-            checkboxGroupInput(
-              inputId = ns("selected_quarts_corr"),
-              label = h6("Quarters shown in plot:"),
-              choices = c(
-                "2018 Q1", "2018 Q2", "2018 Q3", "2018 Q4",
-                "2019 Q1", "2019 Q2", "2019 Q3", "2019 Q4",
-                "2020 Q1", "2020 Q2", "2020 Q3", "2020 Q4",
-                "2021 Q1", "2021 Q2", "2021 Q3", "2021 Q4",
-                "2022 Q1", "2022 Q2", "2022 Q3", "2022 Q4"
-              ),
-              selected = c(
-                "2018 Q1", "2018 Q2", "2018 Q3", "2018 Q4",
-                "2019 Q1", "2019 Q2", "2019 Q3", "2019 Q4",
-                "2020 Q1", "2020 Q2", "2020 Q3", "2020 Q4",
-                "2021 Q1", "2021 Q2", "2021 Q3", "2021 Q4",
-                "2022 Q1", "2022 Q2", "2022 Q3", "2022 Q4"
-              )
-            ),
-          ),
+          createSubgroupFilterUI(id, "_corr"),
+          createFilterbyvalueUI(id, "_corr")
         )
       ),
       mainPanel(
@@ -326,32 +147,7 @@ plot_Expanded_UI <- function(id, database, hospitals, quarts) {
             selected = "Gender"
           ),
         ),
-        column(
-          6,
-          h3("Filter by values"),
-          sliderInput(ns("slider_minmax_comp"),
-            label = h6("Filter values of y-axis variable (slider shows range of values in y-axis variable)"),
-            min = 0, max = 100, value = c(0, 100)
-          ),
-          checkboxGroupInput(
-            inputId = ns("selected_quarts_comp"),
-            label = h6("Quarters shown in plot:"),
-            choices = c(
-              "2018 Q1", "2018 Q2", "2018 Q3", "2018 Q4",
-              "2019 Q1", "2019 Q2", "2019 Q3", "2019 Q4",
-              "2020 Q1", "2020 Q2", "2020 Q3", "2020 Q4",
-              "2021 Q1", "2021 Q2", "2021 Q3", "2021 Q4",
-              "2022 Q1", "2022 Q2", "2022 Q3", "2022 Q4"
-            ),
-            selected = c(
-              "2018 Q1", "2018 Q2", "2018 Q3", "2018 Q4",
-              "2019 Q1", "2019 Q2", "2019 Q3", "2019 Q4",
-              "2020 Q1", "2020 Q2", "2020 Q3", "2020 Q4",
-              "2021 Q1", "2021 Q2", "2021 Q3", "2021 Q4",
-              "2022 Q1", "2022 Q2", "2022 Q3", "2022 Q4"
-            )
-          ),
-        ),
+        createFilterbyvalueUI(id, "_comp")
       )),
       mainPanel(
         plotlyOutput(
@@ -623,28 +419,29 @@ plot_Expanded <- function(id, df) {
       observeEvent(input$selected_quarts_corr, {
         QI_filterquarts_corr(input$selected_quarts_corr)
       })
+      # Définissez une correspondance entre les valeurs input et les arguments correspondants
+      split_corr_mapping <- list(
+        "Gender" = "gender",
+        "mRS on discharge" = "discharge_mrs",
+        "3-month mRS" = "three_m_mrs",
+        "Arrival pre-notified" = "prenotification",
+        "Imaging done" = "imaging_done",
+        "Physiotherapy initiated" = "occup_physiotherapy_received",
+        "Test for dysphagia screen" = "dysphagia_screening_done"
+      )
+
+      # Utilisez observeEvent pour gérer l'entrée
       observeEvent(input$selected_split_corr, {
-        # Physiotherapy initiated", "Test for dysphagia screen"),
-        QI_splitlab_corr(input$selected_split_corr)
-        if (input$selected_split_corr == "Gender") {
-          QI_split_corr("gender")
-        } else if (input$selected_split_corr == "mRS on discharge") {
-          QI_split_corr("discharge_mrs")
-        } else if (input$selected_split_corr == "3-month mRS") {
-          QI_split_corr("three_m_mrs")
-        } else if (input$selected_split_corr == "Arrival pre-notified") {
-          QI_split_corr("prenotification")
-        } else if (input$selected_split_corr == "Imaging done") {
-          QI_split_corr("imaging_done")
-        } else if (input$selected_split_corr == "Physiotherapy initiated") {
-          QI_split_corr("occup_physiotherapy_received")
-        } else if (input$selected_split_corr == "Test for dysphagia screen") {
-          QI_split_corr("dysphagia_screening_done")
+        selected_corr <- input$selected_split_corr
+        QI_splitlab_corr(selected_corr)
+
+        # Vérifiez si la valeur sélectionnée est dans la correspondance
+        if (selected_corr %in% names(split_corr_mapping)) {
+          QI_split_corr(split_corr_mapping[selected_corr])
         } else {
           QI_split_corr("None")
         }
       })
-
 
 
       observeEvent(input$selected_col_comp, {
@@ -666,33 +463,29 @@ plot_Expanded <- function(id, df) {
       observeEvent(input$selected_quarts_comp, {
         QI_filterquarts_comp(input$selected_quarts_comp)
       })
+
+      # Define a mapping between input values and corresponding arguments
+      split_comp_mapping <- list(
+        "Gender" = list(split_comp = "gender", xlab_comp = c("0" = "Female", "1" = "Male")),
+        "mRS on discharge" = list(split_comp = "discharge_mrs", xlab_comp = c(0:6)),
+        "3-month mRS" = list(split_comp = "three_m_mrs", xlab_comp = c(0:6)),
+        "Arrival pre-notified" = list(split_comp = "prenotification", xlab_comp = c("0" = "Not prenotified", "1" = "Prenotified")),
+        "Imaging done" = list(split_comp = "imaging_done", xlab_comp = c("0" = "Imaging not done", "1" = "Imaging done")),
+        "Physiotherapy initiated" = list(split_comp = "occup_physiotherapy_received", xlab_comp = c("0" = "Physio. not started", "1" = "Physio. started")),
+        "Test for dysphagia screen" = list(split_comp = "dysphagia_screening_done", xlab_comp = c("0" = "Dysphagia not screened", "1" = "Dysphagia screening done"))
+      )
+
+      # Use observeEvent to handle the input
       observeEvent(input$selected_split_comp, {
-        # Physiotherapy initiated", "Test for dysphagia screen"),
-        if (input$selected_split_comp == "Gender") {
-          QI_split_comp("gender")
-          QI_xlab_comp(c("0" = "Female", "1" = "Male"))
-        } else if (input$selected_split_comp == "mRS on discharge") {
-          QI_split_comp("discharge_mrs")
-          QI_xlab_comp(c(0:6))
-        } else if (input$selected_split_comp == "3-month mRS") {
-          QI_split_comp("three_m_mrs")
-          QI_xlab_comp(c(0:6))
-        } else if (input$selected_split_comp == "Arrival pre-notified") {
-          QI_split_comp("prenotification")
-          QI_xlab_comp(c("0" = "Not prenotified", "1" = "Prenotified"))
-        } else if (input$selected_split_comp == "Imaging done") {
-          QI_split_comp("imaging_done")
-          QI_xlab_comp(c("0" = "Imaging not done", "1" = "imaging done"))
-        } else if (input$selected_split_comp == "Physiotherapy initiated") {
-          QI_split_comp("occup_physiotherapy_received")
-          QI_xlab_comp(c("0" = "Physio. not started", "1" = "Physio. started"))
-        } else if (input$selected_split_comp == "Test for dysphagia screen") {
-          QI_split_comp("dysphagia_screening_done")
-          QI_xlab_comp(c("0" = "Dysphagia not screened", "1" = "Dysphagia screening done"))
+        mapping <- split_comp_mapping[[input$selected_split_comp]]
+        if (!is.null(mapping)) {
+          QI_split_comp(mapping$split_comp)
+          QI_xlab_comp(mapping$xlab_comp)
         } else {
           QI_split_comp("None")
         }
       })
+
 
       output$plot <- renderPlotly({
         if (!is.null(QI_name())) {
@@ -739,14 +532,10 @@ plot_Expanded <- function(id, df) {
                   max = max(Value), mean = mean(Value), .groups = "drop"
                 ) %>%
                 ungroup()
-
-
-
               plot <- plot +
                 geom_line(data = compare_data, aes(y = .data[[QI_agg()]], group = site_name, linetype = site_name), color = "grey", alpha = 0.5) +
                 geom_point(data = compare_data, aes(y = .data[[QI_agg()]]), color = "grey", alpha = 0.5)
             }
-
             if (compare_national() == TRUE) {
               compare_nat_data <- numVars %>%
                 filter(QI == QI_name(), site_name != "Samaritan", gender %in% QI_gender(), imaging_done %in% QI_imaging(), prenotification %in% QI_prenotification(), discharge_mrs %in% QI_mrs(), YQ %in% QI_filterquarts(), Value %in% QI_filterminmax()) %>%
@@ -757,14 +546,10 @@ plot_Expanded <- function(id, df) {
                   max = max(Value), mean = mean(Value), .groups = "drop"
                 ) %>%
                 ungroup()
-
-
               plot <- plot +
                 geom_line(data = compare_nat_data, aes(group = 1, y = .data[[QI_agg()]]), color = "#56B4E9", alpha = 0.5, linetype = "solid") +
                 geom_point(data = compare_nat_data, aes(y = .data[[QI_agg()]]), color = "#56B4E9", alpha = 0.5)
             }
-
-
             ggplotly(plot)
           }
         }
@@ -807,13 +592,9 @@ plot_Expanded <- function(id, df) {
               filter(QI == QI_name(), site_name == compared_hospitals_dist(), gender %in% QI_gender_dist(), imaging_done %in% QI_imaging_dist(), prenotification %in% QI_prenotification_dist(), discharge_mrs %in% QI_mrs_dist(), YQ %in% QI_filterquarts_dist(), Value %in% QI_filterminmax_dist()) %>%
               drop_na(Value) %>%
               group_by(site_name)
-
-
-
             distPlot <- distPlot +
               geom_density(data = compare_data_dist, aes(group = 1), color = "grey", alpha = 0.5, linetype = "solid")
           }
-
           ggplotly(distPlot)
         }
       })
