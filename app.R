@@ -45,59 +45,59 @@ server <- function(input, output, session) {
   #view(numVars)
   #view(catVars)
   #view(QI_db)
-  QI_reactive_values <- list(
-    QI_name <- reactiveVal("Door-to-imaging time"),
-    QI_agg <- reactiveVal("median"),
-    QI_trend <- reactiveVal(FALSE),
-    QI_error <- reactiveVal(FALSE),
-    QI_gender <- reactiveVal(c(0, 1)),
-    QI_prenotification <- reactiveVal(c(1, 0)),
-    QI_imaging <- reactiveVal(c(1, 0)),
-    QI_mrs <- reactiveVal(c(0:6)),
-    QI_filterminmax <- reactiveVal(NULL),
-    QI_filterquarts <- reactiveVal(NULL),
-    compared_hospitals <- reactiveVal(NULL),
-    compare_national <- reactiveVal(FALSE),
-    QI_displayaspercentage <- reactiveVal(NULL),
-    QI_ylab <- reactiveVal(NULL),
-    
-    QI_name_dist <- reactiveVal("Door-to-imaging time"),
-    QI_mean_dist <- reactiveVal(FALSE),
-    QI_median_dist <- reactiveVal(FALSE),
-    compared_hospitals_dist <- reactiveVal(NULL),
-    compare_national_dist <- reactiveVal(FALSE),
-    QI_filterminmax_dist <- reactiveVal(NULL),
-    QI_filterquarts_dist <- reactiveVal(NULL),
-    QI_gender_dist <- reactiveVal(c(0, 1)),
-    QI_prenotification_dist <- reactiveVal(c(1, 0)),
-    QI_imaging_dist <- reactiveVal(c(1, 0)),
-    QI_mrs_dist <- reactiveVal(c(0:6)),
-    QI_xlab_dist <- reactiveVal(NULL),
-    
-    QI_name_x_corr <- reactiveVal("Door-to-imaging time"),
-    QI_name_y_corr <- reactiveVal("Modified ranking scale discharge"),
-    QI_filterminmax_x_corr <- reactiveVal(NULL),
-    QI_filterminmax_y_corr <- reactiveVal(NULL),
-    QI_filterquarts_corr <- reactiveVal(NULL),
-    QI_gender_corr <- reactiveVal(c(0, 1)),
-    QI_prenotification_corr <- reactiveVal(c(1, 0)),
-    QI_imaging_corr <- reactiveVal(c(1, 0)),
-    QI_mrs_corr <- reactiveVal(c(0:6)),
-    QI_split_corr<- reactiveVal(NULL),
-    QI_trend_corr <- reactiveVal(FALSE),
-    QI_xlab_corr <- reactiveVal(NULL),
-    QI_ylab_corr <- reactiveVal(NULL),
-    QI_splitlab_corr <- reactiveVal(NULL),
-    
-    QI_name_comp <- reactiveVal("Door-to-imaging time"),
-    QI_split_comp<- reactiveVal(NULL),
-    QI_filterminmax_comp <- reactiveVal(NULL),
-    QI_filterquarts_comp <- reactiveVal(NULL),
-    QI_ylab_comp <- reactiveVal(NULL),
-    QI_xlab_comp <- reactiveVal(NULL)
-  )
+  session$userData$QI_reactive_values <- reactiveValues()
   
-  plot_Expanded("Dashboard",QI_db,QI_reactive_values)
+  session$userData$QI_reactive_values$QI_name <- "Door-to-imaging time"
+  session$userData$QI_reactive_values$QI_agg <- "median"
+  session$userData$QI_reactive_values$QI_trend <- FALSE
+  session$userData$QI_reactive_values$QI_error <- FALSE
+  session$userData$QI_reactive_values$QI_gender <- c(0, 1)
+  session$userData$QI_reactive_values$QI_prenotification <- c(1, 0)
+  session$userData$QI_reactive_values$QI_imaging <- c(1, 0)
+  session$userData$QI_reactive_values$QI_mrs <- c(0:6)
+  session$userData$QI_reactive_values$QI_filterminmax <- NULL
+  session$userData$QI_reactive_values$QI_filterquarts <- NULL
+  session$userData$QI_reactive_values$compared_hospitals <- NULL
+  session$userData$QI_reactive_values$compare_national <- FALSE
+  session$userData$QI_reactive_values$QI_displayaspercentage <- NULL
+  session$userData$QI_reactive_values$QI_ylab <- NULL
+    
+  session$userData$QI_reactive_values$QI_name_dist <- "Door-to-imaging time"
+  session$userData$QI_reactive_values$QI_mean_dist <- FALSE
+  session$userData$QI_reactive_values$QI_median_dist <- FALSE
+  session$userData$QI_reactive_values$compared_hospitals_dist <- NULL
+  session$userData$QI_reactive_values$compare_national_dist <- FALSE
+  session$userData$QI_reactive_values$QI_filterminmax_dist <- NULL
+  session$userData$QI_reactive_values$QI_filterquarts_dist <- NULL
+  session$userData$QI_reactive_values$QI_gender_dist <- c(0, 1)
+  session$userData$QI_reactive_values$QI_prenotification_dist <- c(1, 0)
+  session$userData$QI_reactive_values$QI_imaging_dist <- c(1, 0)
+  session$userData$QI_reactive_values$QI_mrs_dist <- c(0:6)
+  session$userData$QI_reactive_values$QI_xlab_dist <- NULL
+    
+  session$userData$QI_reactive_values$QI_name_x_corr <- "Door-to-imaging time"
+  session$userData$QI_reactive_values$QI_name_y_corr <- "Modified ranking scale discharge"
+  session$userData$QI_reactive_values$QI_filterminmax_x_corr <- NULL
+  session$userData$QI_reactive_values$QI_filterminmax_y_corr <- NULL
+  session$userData$QI_reactive_values$QI_filterquarts_corr <- NULL
+  session$userData$QI_reactive_values$QI_gender_corr <- c(0, 1)
+  session$userData$QI_reactive_values$QI_prenotification_corr <- c(1, 0)
+  session$userData$QI_reactive_values$QI_imaging_corr <- c(1, 0)
+  session$userData$QI_reactive_values$QI_mrs_corr <- c(0:6)
+  session$userData$QI_reactive_values$QI_split_corr<- NULL
+  session$userData$QI_reactive_values$QI_trend_corr <- FALSE
+  session$userData$QI_reactive_values$QI_xlab_corr <- NULL
+  session$userData$QI_reactive_values$QI_ylab_corr <- NULL
+  session$userData$QI_reactive_values$QI_splitlab_corr <- NULL
+    
+  session$userData$QI_reactive_values$QI_name_comp <- "Door-to-imaging time"
+  session$userData$QI_reactive_values$QI_split_comp<- NULL
+  session$userData$QI_reactive_values$QI_filterminmax_comp <- NULL
+  session$userData$QI_reactive_values$QI_filterquarts_comp <- NULL
+  session$userData$QI_reactive_values$QI_ylab_comp <- NULL
+  session$userData$QI_reactive_values$QI_xlab_comp <- NULL
+  
+  plot_Expanded("Dashboard",QI_db)
 }
 
 shinyApp(ui = ui, server = server)
